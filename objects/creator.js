@@ -285,7 +285,7 @@ class Creator {
                     } else {
                         // no parent cat
                         let options = {
-                            bitrate: origVoiceCh.bitrate * 1000,
+                            bitrate: (origVoiceCh.bitrate > 96 ? 96 : origVoiceCh.bitrate) * 1000,
                             userLimit: origVoiceCh.userLimit
                         };
                         options.overwrites = [];
