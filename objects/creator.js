@@ -151,7 +151,9 @@ class Creator {
                 for (let category in guildData.categories) {
                     let originalCategory = guildData.categories[category];
 
-                    let options = {};
+                    let options = {
+                        type: 'category'
+                    };
                     options.overwrites = [];
                     originalCategory.permOverwrites.map(origPermOver => {
                         let overwrite = {
@@ -163,7 +165,7 @@ class Creator {
                     });
 
                     if (debug) console.log(`${guildData.step - 1}.${counter++} Creating catergory \"${originalCategory.name}\"`);
-                    let newCategoryChannel = await newGuild.createChannel(originalCategory.name, 'category', options);
+                    let newCategoryChannel = await newGuild.createChannel(originalCategory.name, options);
                     guildData.categories[category].idNew = newCategoryChannel.id;
                     guildData.references.categories[originalCategory.idOld] = originalCategory.idNew;
                 }
@@ -190,34 +192,13 @@ class Creator {
                 for (let textChannel in guildData.textChannel) {
                     let origTextCh = guildData.textChannel[textChannel];
 
-                    if (origTextCh.parentCat) {
-                        // cat as parent
-                        let options = {
-                            nsfw: origTextCh.nsfw,
-                            parent: guildData.references.categories[origTextCh.parentCat]
-                        };
+                    let options = {
+                        type: 'text',
+                        nsfw: origTextCh.nsfw
+                    };
+                    if (origTextCh.parentCat) options.parent = guildData.references.categories[origTextCh.parentCat];
 
-                        if (!origTextCh.permLocked) {
-                            options.overwrites = [];
-                            origTextCh.permOverwrites.map(origPermOver => {
-                                let overwrite = {
-                                    id: guildData.references.roles[origPermOver.id],
-                                    allowed: new client.objects.discord.Permissions(origPermOver.allowed),
-                                    denied: new client.objects.discord.Permissions(origPermOver.denied)
-                                };
-                                options.overwrites.push(overwrite);
-                            });
-                        }
-
-                        if (debug) console.log(`${guildData.step - 1}.${counter++} Creating ${origTextCh.nsfw ? 'nsfw ' : ''}text channel \"${origTextCh.name}\" (category: ${newGuild.channels.get(guildData.references.categories[origTextCh.parentCat]).name})`);
-                        let newTextChannel = await newGuild.createChannel(origTextCh.name, 'text', options);
-                        if (origTextCh.topic) await newTextChannel.setTopic(origTextCh.topic);
-                        if (origTextCh.systemChannel) await newGuild.setSystemChannel(newTextChannel.id);
-                    } else {
-                        // no parent cat
-                        let options = {};
-                        options.nsfw = origTextCh.nsfw;
-
+                    if (!origTextCh.permLocked) {
                         options.overwrites = [];
                         origTextCh.permOverwrites.map(origPermOver => {
                             let overwrite = {
@@ -227,12 +208,12 @@ class Creator {
                             };
                             options.overwrites.push(overwrite);
                         });
-
-                        if (debug) console.log(`${guildData.step - 1}.${counter++} Creating ${origTextCh.nsfw ? 'nsfw ' : ''}text channel \"${origTextCh.name}\"`);
-                        let newTextChannel = await newGuild.createChannel(origTextCh.name, 'text', options);
-                        await newTextChannel.setTopic(origTextCh.topic);
-                        if (origTextCh.systemChannel) await newGuild.setSystemChannel(newTextChannel.id);
                     }
+
+                    if (debug) console.log(`${guildData.step - 1}.${counter++} Creating ${origTextCh.nsfw ? 'nsfw ' : ''}text channel \"${origTextCh.name}\"${origTextCh.parentCat ? ` (category: ${newGuild.channels.get(guildData.references.categories[origTextCh.parentCat]).name})` : ''}`);
+                    let newTextChannel = await newGuild.createChannel(origTextCh.name, options);
+                    if (origTextCh.topic) await newTextChannel.setTopic(origTextCh.topic);
+                    if (origTextCh.systemChannel) await newGuild.setSystemChannel(newTextChannel.id);
                 }
 
                 return resolve();
@@ -259,35 +240,14 @@ class Creator {
                 for (let voiceChannel in guildData.voiceChannel) {
                     let origVoiceCh = guildData.voiceChannel[voiceChannel];
 
-                    if (origVoiceCh.parentCat) {
-                        // cat as parent
-                        let options = {
-                            bitrate: (origVoiceCh.bitrate > 96 ? 96 : origVoiceCh.bitrate) * 1000,
-                            userLimit: origVoiceCh.userLimit,
-                            parent: guildData.references.categories[origVoiceCh.parentCat]
-                        };
+                    let options = {
+                        type: 'voice',
+                        bitrate: (origVoiceCh.bitrate > 96 ? 96 : origVoiceCh.bitrate) * 1000,
+                        userLimit: origVoiceCh.userLimit,
+                    };
+                    if (origVoiceCh.parentCat) options.parent = guildData.references.categories[origVoiceCh.parentCat];
 
-                        if (!origVoiceCh.permLocked) {
-                            options.overwrites = [];
-                            origVoiceCh.permOverwrites.map(origPermOver => {
-                                let overwrite = {
-                                    id: guildData.references.roles[origPermOver.id],
-                                    allowed: new client.objects.discord.Permissions(origPermOver.allowed),
-                                    denied: new client.objects.discord.Permissions(origPermOver.denied)
-                                };
-                                options.overwrites.push(overwrite);
-                            });
-                        }
-
-                        if (debug) console.log(`${guildData.step - 1}.${counter++} Creating voice channel \"${origVoiceCh.name}\" (category: ${newGuild.channels.get(guildData.references.categories[origVoiceCh.parentCat]).name})`);
-                        let newVoiceChannel = await newGuild.createChannel(origVoiceCh.name, 'voice', options);
-                        if (origVoiceCh.afkChannel) await newGuild.setAFKChannel(newVoiceChannel.id);
-                    } else {
-                        // no parent cat
-                        let options = {
-                            bitrate: (origVoiceCh.bitrate > 96 ? 96 : origVoiceCh.bitrate) * 1000,
-                            userLimit: origVoiceCh.userLimit
-                        };
+                    if (!origVoiceCh.permLocked) {
                         options.overwrites = [];
                         origVoiceCh.permOverwrites.map(origPermOver => {
                             let overwrite = {
@@ -297,11 +257,11 @@ class Creator {
                             };
                             options.overwrites.push(overwrite);
                         });
-
-                        if (debug) console.log(`${guildData.step - 1}.${counter++} Creating voice channel \"${origVoiceCh.name}\"`);
-                        let newVoiceChannel = await newGuild.createChannel(origVoiceCh.name, 'voice', options);
-                        if (origVoiceCh.afkChannel) await newGuild.setAFKChannel(newVoiceChannel.id);
                     }
+
+                    if (debug) console.log(`${guildData.step - 1}.${counter++} Creating voice channel \"${origVoiceCh.name}\"${origVoiceCh.parentCat ? ` (category: ${newGuild.channels.get(guildData.references.categories[origVoiceCh.parentCat]).name})` : ''}`);
+                    let newVoiceChannel = await newGuild.createChannel(origVoiceCh.name, options);
+                    if (origVoiceCh.afkChannel) await newGuild.setAFKChannel(newVoiceChannel.id);
                 }
 
                 await newGuild.setAFKTimeout(guildData.general.afkTimeout);

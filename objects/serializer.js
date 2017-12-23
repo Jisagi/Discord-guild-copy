@@ -204,7 +204,7 @@ class Serializer {
                         position: tCh.position,
                         rawPosition: tCh.rawPosition,
                         parentCat: tCh.parentID,
-                        permLocked: tCh.permissionsLocked
+                        permLocked: tCh.permissionsLocked ? tCh.permissionsLocked : false
                     };
 
                     if (tCh.permissionsLocked) {
@@ -253,7 +253,7 @@ class Serializer {
                         bitrate: vCh.bitrate,
                         userLimit: vCh.userLimit,
                         afkChannel: guildToCopy.afkChannelID === vCh.id,
-                        permLocked: vCh.permissionsLocked
+                        permLocked: vCh.permissionsLocked ? vCh.permissionsLocked : false
                     };
 
                     if (vCh.permissionsLocked) {
