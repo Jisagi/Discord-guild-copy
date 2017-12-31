@@ -1,4 +1,4 @@
-﻿const copyEmojis = require('../settings.json');
+﻿const copyEmojis = require('../settings.json').copyEmojis;
 
 class Cleaner {
     /**
