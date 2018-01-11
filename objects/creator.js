@@ -107,18 +107,16 @@ class Creator {
                     if (!originalRole.defaultRole) {
                         // create new role
                         let newRole = {
-                            data: {
-                                name: originalRole.name,
-                                color: originalRole.hexColor,
-                                hoist: originalRole.hoist,
-                                mentionable: originalRole.mentionable,
-                                permissions: originalRole.permBitfield,
-                                position: 1 // prevents wrong role sorting
-                            }
+                            name: originalRole.name,
+                            color: originalRole.hexColor,
+                            hoist: originalRole.hoist,
+                            mentionable: originalRole.mentionable,
+                            permissions: originalRole.permBitfield,
+                            position: 1 // prevents wrong role sorting
                         };
 
                         if (debug) console.log(`${guildData.step - 1}.${counter++} Creating role \"${originalRole.name}\"`);
-                        let createdRole = await newGuild.createRole(newRole);
+                        let createdRole = await newGuild.roles.create(newRole);
                         guildData.roles[role].idNew = createdRole.id;
                         guildData.references.roles[originalRole.idOld] = createdRole.id;
                     } else {
@@ -165,7 +163,7 @@ class Creator {
                     });
 
                     if (debug) console.log(`${guildData.step - 1}.${counter++} Creating catergory \"${originalCategory.name}\"`);
-                    let newCategoryChannel = await newGuild.createChannel(originalCategory.name, options);
+                    let newCategoryChannel = await newGuild.channels.create(originalCategory.name, options);
                     guildData.categories[category].idNew = newCategoryChannel.id;
                     guildData.references.categories[originalCategory.idOld] = originalCategory.idNew;
                 }
@@ -211,7 +209,7 @@ class Creator {
                     }
 
                     if (debug) console.log(`${guildData.step - 1}.${counter++} Creating ${origTextCh.nsfw ? 'nsfw ' : ''}text channel \"${origTextCh.name}\"${origTextCh.parentCat ? ` (category: ${newGuild.channels.get(guildData.references.categories[origTextCh.parentCat]).name})` : ''}`);
-                    let newTextChannel = await newGuild.createChannel(origTextCh.name, options);
+                    let newTextChannel = await newGuild.channels.create(origTextCh.name, options);
                     if (origTextCh.topic) await newTextChannel.setTopic(origTextCh.topic);
                     if (origTextCh.systemChannel) await newGuild.setSystemChannel(newTextChannel.id);
                 }
@@ -260,7 +258,7 @@ class Creator {
                     }
 
                     if (debug) console.log(`${guildData.step - 1}.${counter++} Creating voice channel \"${origVoiceCh.name}\"${origVoiceCh.parentCat ? ` (category: ${newGuild.channels.get(guildData.references.categories[origVoiceCh.parentCat]).name})` : ''}`);
-                    let newVoiceChannel = await newGuild.createChannel(origVoiceCh.name, options);
+                    let newVoiceChannel = await newGuild.channels.create(origVoiceCh.name, options);
                     if (origVoiceCh.afkChannel) await newGuild.setAFKChannel(newVoiceChannel.id);
                 }
 
@@ -285,9 +283,9 @@ class Creator {
                 let counter = 1;
 
                 for (let emoji in guildData.emojis) {
-                    if (debug) console.log(`${guildData.step - 1}.${counter++} Creating emoji: ${origVoiceCh.name}`);
                     let origEmoji = guildData.emojis[emoji];
-                    await newGuild.createEmoji(origEmoji.url, origEmoji.name);
+                    if (debug) console.log(`${guildData.step - 1}.${counter++} Creating emoji: ${origEmoji.name}`);
+                    await newGuild.emojis.create(origEmoji.url, origEmoji.name);
                 }
 
                 return resolve();
