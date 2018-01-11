@@ -29,7 +29,9 @@ Did you ever want to create a copy of a guild? Now you can! There is no need to 
 ## Disclaimer
 **_Use this script at your own risk!_**
 
-Discord has a strict policy on user bots and also a lower rate limit. The script executes quite a few api calls, therefore the execution on a user account is blocked at least to a certain point (see below). If you provide a user account token the script will backup the original guild and save it to a file but then stop the execution with a warning. From there on you just replace the user token with a bot token and rerun the script. It will automatically load the backup file and do its job.
+According to the recent [statement](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots000000) of the discord team, any kind of user accounts including so called SelfBots are forbidden. The script still allows you to backup a guild with a user account and stop after, but i still don't recommend it. Therefore, if you use this on a user account, it will be **at your own risk with the possibility of your account being banned from discord permanently!** Please don't come to me and complain if you get banned using this on a user account.
+
+The script executes quite a few api calls, therefore the execution on a user account is blocked at least to a certain point (see below). If you provide a user account token the script will backup the original guild and save it to a file but then stop the execution with a warning. From there on you just replace the user token with a bot token and rerun the script. It will automatically load the backup file and do its job.
 
 The most problematic part are the emojis. The deletion and creation of a guild with maxed out emojis will hit the rate limit. By default emojis will not be copied over to the new guild. If you only have around 25 or less emojis you might not run into a rate limit. I don't recommend using this if you have more.
 
@@ -38,7 +40,7 @@ The most problematic part are the emojis. The deletion and creation of a guild w
 2. Unzip it
 3. Navigate into the extracted folder
 4. Edit the `settings.json` and fill in all necessary data (see [Settings](https://github.com/Jisagi/Discord-guild-copy#settings) for more information)
-5. Open the console and run `npm install` (on windows you can shift + right click inside project folder folder and select 'open command prompt here')
+5. Open the console and run `npm install` (on windows you can shift + right click inside the project folder folder and select 'open command prompt here')
 6. Run `node copy.js` in the console to start the script
 
 ## Settings
