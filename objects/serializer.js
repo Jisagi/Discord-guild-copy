@@ -91,8 +91,7 @@ class Serializer {
                     icon: guild.iconURL({ format: 'png', size: 2048 }),
                     verificationLevel: guild.verificationLevel,
                     defaultRole: {
-                        old: guild.defaultRole.id,
-                        new: null
+                        old: guild.defaultRole.id
                     },
                     afkTimeout: guild.afkTimeout,
                     explicitContentFilter: guild.explicitContentFilter,
@@ -123,7 +122,6 @@ class Serializer {
                 roleCollection.map((role) => {
                     let singleRole = {
                         idOld: role.id,
-                        idNew: null,
                         name: role.name,
                         hexColor: role.hexColor,
                         hoist: role.hoist,
@@ -157,7 +155,6 @@ class Serializer {
                 categoryCollection.map((cat) => {
                     let singleCat = {
                         idOld: cat.id,
-                        idNew: null,
                         name: cat.name,
                         position: cat.position,
                         rawPosition: cat.rawPosition
