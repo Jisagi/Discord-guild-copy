@@ -13,8 +13,8 @@ class Serializer {
         return new Promise(async (resolve, reject) => {
             try {
                 // check
+                if (!client.guilds.has(originalGuildId)) return reject(new Error('Original guild to copy does not exist. Please check if the id in the settings is correct and if the bot is also member of this guild.'));
                 let guildToCopy = client.guilds.get(originalGuildId);
-                if (!guildToCopy) return reject(new Error('Original guild to copy does not exist. Please check if the id in the settings is correct.'));
                 if (!guildToCopy.available) return reject(new Error('Original guild not available. Please try again later.'));
 
                 // general
@@ -119,7 +119,7 @@ class Serializer {
 
                 let roles = {};
                 let counter = 0;
-                roleCollection.map((role) => {
+                roleCollection.forEach((role) => {
                     let singleRole = {
                         idOld: role.id,
                         name: role.name,
@@ -152,7 +152,7 @@ class Serializer {
         return new Promise((resolve, reject) => {
             try {
                 let categories = {};
-                categoryCollection.map((cat) => {
+                categoryCollection.forEach((cat) => {
                     let singleCat = {
                         idOld: cat.id,
                         name: cat.name,
@@ -161,7 +161,7 @@ class Serializer {
                     };
 
                     singleCat.permOverwrites = [];
-                    cat.permissionOverwrites.map((permOver) => {
+                    cat.permissionOverwrites.forEach((permOver) => {
                         if (permOver.type !== 'role') return;
 
                         let overwrite = {
@@ -192,7 +192,7 @@ class Serializer {
         return new Promise((resolve, reject) => {
             try {
                 let textChannel = {};
-                textChannelCollection.map((tCh) => {
+                textChannelCollection.forEach((tCh) => {
                     let singleCh = {
                         name: tCh.name,
                         topic: tCh.topic,
@@ -210,7 +210,7 @@ class Serializer {
                     }
 
                     singleCh.permOverwrites = [];
-                    tCh.permissionOverwrites.map((permOver) => {
+                    tCh.permissionOverwrites.forEach((permOver) => {
                         if (permOver.type !== 'role') return;
 
                         let overwrite = {
@@ -241,7 +241,7 @@ class Serializer {
         return new Promise((resolve, reject) => {
             try {
                 let voiceChannel = {};
-                voiceChannelCollection.map((vCh) => {
+                voiceChannelCollection.forEach((vCh) => {
                     let singleCh = {
                         name: vCh.name,
                         position: vCh.position,
@@ -259,7 +259,7 @@ class Serializer {
                     }
 
                     singleCh.permOverwrites = [];
-                    vCh.permissionOverwrites.map((permOver) => {
+                    vCh.permissionOverwrites.forEach((permOver) => {
                         if (permOver.type !== 'role') return;
 
                         let overwrite = {
@@ -289,7 +289,7 @@ class Serializer {
             try {
                 let emojis = {};
                 let step = 0;
-                emojiCollection.map((emoji) => {
+                emojiCollection.forEach((emoji) => {
                     let singleEmoji = {
                         name: emoji.name,
                         url: emoji.url

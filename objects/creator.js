@@ -107,12 +107,14 @@ class Creator {
                     if (!originalRole.defaultRole) {
                         // create new role
                         let newRole = {
-                            name: originalRole.name,
-                            color: originalRole.hexColor,
-                            hoist: originalRole.hoist,
-                            mentionable: originalRole.mentionable,
-                            permissions: originalRole.permBitfield,
-                            position: 1 // prevents wrong role sorting
+                            data: {
+                                name: originalRole.name,
+                                color: originalRole.hexColor,
+                                hoist: originalRole.hoist,
+                                mentionable: originalRole.mentionable,
+                                permissions: originalRole.permBitfield,
+                                position: 1 // prevents wrong role sorting
+                            }
                         };
 
                         if (debug) console.log(`${guildData.step - 1}.${counter++} Creating role \"${originalRole.name}\"`);
@@ -153,7 +155,7 @@ class Creator {
                         type: 'category'
                     };
                     options.overwrites = [];
-                    originalCategory.permOverwrites.map(origPermOver => {
+                    originalCategory.permOverwrites.forEach(origPermOver => {
                         let overwrite = {
                             id: guildData.references.roles[origPermOver.id],
                             allowed: new client.objects.discord.Permissions(origPermOver.allowed),
@@ -198,7 +200,7 @@ class Creator {
 
                     if (!origTextCh.permLocked) {
                         options.overwrites = [];
-                        origTextCh.permOverwrites.map(origPermOver => {
+                        origTextCh.permOverwrites.forEach(origPermOver => {
                             let overwrite = {
                                 id: guildData.references.roles[origPermOver.id],
                                 allowed: new client.objects.discord.Permissions(origPermOver.allowed),
@@ -247,7 +249,7 @@ class Creator {
 
                     if (!origVoiceCh.permLocked) {
                         options.overwrites = [];
-                        origVoiceCh.permOverwrites.map(origPermOver => {
+                        origVoiceCh.permOverwrites.forEach(origPermOver => {
                             let overwrite = {
                                 id: guildData.references.roles[origPermOver.id],
                                 allowed: new client.objects.discord.Permissions(origPermOver.allowed),
