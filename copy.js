@@ -31,6 +31,7 @@ client.on('ready', async () => {
         guildData = await fileHandler.checkIfDataExists(client, originalGuildId, newGuildId, newGuildAdminRoleId, guildData);
         if (!client.user.bot) {
             console.log(`${guildData.step}. Program execution stopped because the provided token is a user account. Please use a bot account with the serialized data.`);
+            await client.destroy();
             return process.exit();
         }
 
@@ -39,7 +40,7 @@ client.on('ready', async () => {
         guildData = await cleaner.finalize(client, newGuildId, newGuildAdminRoleId, guildData);
         console.log(`${guildData.step++}. Done!`);
     } catch (ex) {
-        return console.error(debug ? `Error: ${ex.stack}` : `Error: ${ex.message}`);
+        console.error(debug ? `Error: ${ex.stack}` : `Error: ${ex.message}`);
     }
 
     await client.destroy();

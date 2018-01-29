@@ -35,6 +35,8 @@ class Validator {
 
                 if (!newGuildAdminRole) return reject(new Error('New guild admin role id doesn\'t exist.'));
                 if (!newGuildAdminRole.permissions.has('ADMINISTRATOR')) return reject(new Error('New guild admin role doesn\'t have administrator permissions.'));
+                let highestRole = newGuild.roles.reduce((prev, role) => role.comparePositionTo(prev) > 0 ? role : prev, newGuild.roles.first());
+                if (newGuildAdminRole.id !== highestRole.id) return reject(new Error('The guildcopy role has to be the highest role on the target guild.'));
 
                 let ownRoles = newGuild.me.roles.filter(r => r.id === newGuildAdminRole.id);
                 if (client.user.bot && ownRoles.size < 1) return reject(new Error('Please assign the guildcopy role to the bot.'));
