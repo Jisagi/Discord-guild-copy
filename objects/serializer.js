@@ -1,307 +1,241 @@
-﻿const debug = require('../settings.json').debug;
+const { debug } = require('../settings.json');
 const fs = require('fs');
+const Logger = require('./logger');
 
 class Serializer {
     /**
      * Guild data serialization.
-     * 
-     * @param  {Client} client Discord Client
-     * @param  {string} originalGuildId The id of the original guild
-     * @param  {Object} guildData Serialized guild data
+     * @param {Client} client Discord Client
+     * @param {string} originalGuildId The id of the original guild
+     * @param {Collection} banCollection Banned users
+     * @param {Object} guildData Serialized guild data
+     * @returns {Object} guildData
      */
-    static serializeOldGuild(client, originalGuildId, guildData) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                // check
-                if (!client.guilds.has(originalGuildId)) return reject(new Error('Original guild to copy does not exist. Please check if the id in the settings is correct and if the bot is also member of this guild.'));
-                let guildToCopy = client.guilds.get(originalGuildId);
-                if (!guildToCopy.available) return reject(new Error('Original guild not available. Please try again later.'));
+    static serializeOldGuild(client, originalGuildId, banCollection, guildData) {
+        // Check
+        let guildToCopy = client.guilds.get(originalGuildId);
+        if (!guildToCopy.available) throw new Error('Original guild not available. Please try again later.');
 
-                // general
-                console.log(`${guildData.step++}. Serializing general data`);
-                guildData.general = await this.getGeneralData(guildToCopy);
+        // General
+        Logger.logMessage(`${guildData.step++}. Serializing general data`);
+        guildData.general = this.getGeneralData(guildToCopy);
 
-                // roles
-                console.log(`${guildData.step++}. Serializing role data`);
-                guildData.roles = null;
-                if (guildToCopy.roles.size > 0) {
-                    guildData.roles = await this.serializeRoles(guildToCopy.roles, guildToCopy);
-                    if (debug) console.log(`${guildData.step - 1}.1 Serialized ${guildToCopy.roles.size} role${guildToCopy.roles.size > 1 ? 's' : ''}`);
-                }
+        // Roles
+        Logger.logMessage(`${guildData.step++}. Serializing role data`);
+        guildData.roles = guildData.roles = this.serializeRoles(guildToCopy);
+        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.roles.length} role(s)`);
 
-                // categories
-                console.log(`${guildData.step++}. Serializing category data`);
-                guildData.categories = null;
-                let categories = guildToCopy.channels.filter(c => c.type === 'category');
-                if (categories.size > 0) {
-                    guildData.categories = await this.serializeCategories(categories, guildToCopy);
-                    if (debug) console.log(`${guildData.step - 1}.1 Serialized ${categories.size} categor${categories.size > 1 ? 'ies' : 'y'}`);
-                }
+        // Categories
+        Logger.logMessage(`${guildData.step++}. Serializing category data`);
+        guildData.categories = this.serializeCategories(guildToCopy);
+        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.categories.length} category(ies)`);
 
-                // text channel
-                console.log(`${guildData.step++}. Serializing text channel data`);
-                guildData.textChannel = null;
-                let textChannel = guildToCopy.channels.filter(c => c.type === 'text');
-                if (textChannel.size > 0) {
-                    guildData.textChannel = await this.serializeTextChannels(textChannel, guildToCopy);
-                    if (debug) console.log(`${guildData.step - 1}.1 Serialized ${textChannel.size} text channel${textChannel.size > 1 ? 's' : ''}`);
-                }
+        // Text channel
+        Logger.logMessage(`${guildData.step++}. Serializing text channel data`);
+        guildData.textChannel = this.serializeTextChannels(guildToCopy);
+        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.textChannel.length} text channel(s)`);
 
-                // voice channel
-                console.log(`${guildData.step++}. Serializing voice channel data`);
-                guildData.voiceChannel = null;
-                let voiceChannel = guildToCopy.channels.filter(c => c.type === 'voice');
-                if (voiceChannel.size > 0) {
-                    guildData.voiceChannel = await this.serializeVoiceChannels(voiceChannel, guildToCopy);
-                    if (debug) console.log(`${guildData.step - 1}.1 Serialized ${voiceChannel.size} voice channel${voiceChannel.size > 1 ? 's' : ''}`);
-                }
+        // Voice channel
+        Logger.logMessage(`${guildData.step++}. Serializing voice channel data`);
+        guildData.voiceChannel = this.serializeVoiceChannels(guildToCopy);
+        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.voiceChannel.length} voice channel(s)`);
 
-                // emojis
-                console.log(`${guildData.step++}. Serializing emojis`);
-                guildData.emojis = null;
-                if (guildToCopy.emojis.size > 0) {
-                    guildData.emojis = await this.serializeEmojis(guildToCopy.emojis);
-                    if (debug) console.log(`${guildData.step - 1}.1 Serialized ${guildToCopy.emojis.size} emoji${guildToCopy.emojis.size > 1 ? 's' : ''}`);
-                }
+        // Emojis
+        Logger.logMessage(`${guildData.step++}. Serializing emojis`);
+        guildData.emojis = this.serializeEmojis(guildToCopy);
+        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.emojis.length} emoji(s)`);
 
-                // save data to file
-                console.log(`${guildData.step++}. Saving guild data to file`);
-                fs.writeFile('guildData.json', JSON.stringify(guildData), (err) => {
-                    if (err) return reject(err);
-                    console.log(`${guildData.step++}. Serialization finished and data saved`);
-                    return resolve(guildData);
-                });
-            } catch (ex) {
-                return reject(ex);
-            }
-        });
+        // Bans
+        Logger.logMessage(`${guildData.step++}. Serializing bans`);
+        guildData.bans = this.serializeBans(banCollection);
+        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.bans.length} ban(s)`);
+
+        // Save data to file
+        Logger.logMessage(`${guildData.step++}. Saving guild data to file`);
+        fs.writeFileSync('guildData.json', JSON.stringify(guildData));
+        Logger.logMessage(`${guildData.step++}. Serialization finished and data saved`);
+
+        return guildData;
     }
+
     /**
      * Serialization of all general data.
-     * 
-     * @param  {Guild} guild Original guild object
+     * @param {Guild} guild Original guild object
+     * @returns {Object} General guild data
      */
     static getGeneralData(guild) {
-        return new Promise((resolve, reject) => {
-            try {
-                if (!guild.available) return reject(new Error('Guild not available'));
-                let general = {
-                    name: guild.name,
-                    region: guild.region,
-                    icon: guild.iconURL({ format: 'png', size: 2048 }),
-                    verificationLevel: guild.verificationLevel,
-                    defaultRole: {
-                        old: guild.defaultRole.id
-                    },
-                    afkTimeout: guild.afkTimeout,
-                    explicitContentFilter: guild.explicitContentFilter,
-                    systemChannel: guild.systemChannelID,
-                    afkChannel: guild.afkChannelID
-                };
-                return resolve(general);
-            } catch (ex) {
-                return reject(ex);
-            }
-        });
+        return {
+            name: guild.name,
+            region: guild.region,
+            icon: guild.iconURL({ format: 'png', size: 2048 }),
+            verificationLevel: guild.verificationLevel,
+            afkTimeout: guild.afkTimeout,
+            explicitContentFilter: guild.explicitContentFilter,
+        };
     }
+
     /**
      * Role serialization.
      * Managed roles will also be saved.
-     * Role collection is first sorted by their position to ensure correct positioning afterwards.
-     * 
-     * @param  {Collection} roleCollection Collection with roles
-     * @param  {Guild} guildToCopy Original guild object
+     * The role collection is sorted by their position
+     * to ensure correct order afterwards.
+     * @param {Guild} guildToCopy Original guild object
+     * @returns {Object[]} Serialized guild roles
      */
-    static serializeRoles(roleCollection, guildToCopy) {
-        return new Promise((resolve, reject) => {
-            try {
-                roleCollection = roleCollection.sort((a, b) => b.position - a.position);
-
-                let roles = {};
-                let counter = 0;
-                roleCollection.forEach((role) => {
-                    let singleRole = {
-                        idOld: role.id,
-                        name: role.name,
-                        hexColor: role.hexColor,
-                        hoist: role.hoist,
-                        mentionable: role.mentionable,
-                        position: role.position,
-                        rawPosition: role.rawPosition,
-                        defaultRole: guildToCopy.defaultRole.id === role.id,
-                        permBitfield: role.permissions.bitfield
-                    };
-
-                    roles[counter++] = singleRole;
-                });
-
-                return resolve(roles);
-            } catch (ex) {
-                return reject(ex);
-            }
+    static serializeRoles(guildToCopy) {
+        let roleCol = guildToCopy.roles.sort((a, b) => b.position - a.position);
+        let roles = roleCol.map(role => {
+            return {
+                idOld: role.id,
+                name: role.name,
+                hexColor: role.hexColor,
+                hoist: role.hoist,
+                mentionable: role.mentionable,
+                position: role.position,
+                rawPosition: role.rawPosition,
+                defaultRole: guildToCopy.defaultRole.id === role.id,
+                permBitfield: role.permissions.bitfield,
+            };
         });
+
+        return roles;
     }
+
     /**
      * Category serialization.
      * Only role permission overwrites will be saved.
-     * 
-     * @param  {Collection} categoryCollection Collection with categories
-     * @param  {Guild} guildToCopy Original guild object
+     * The category collection is sorted by their position
+     * to ensure correct order afterwards.
+     * @param {Guild} guildToCopy Original guild object
+     * @returns {Object[]} Serialized category channels
      */
-    static serializeCategories(categoryCollection, guildToCopy) {
-        return new Promise((resolve, reject) => {
-            try {
-                let categories = {};
-                categoryCollection.forEach((cat) => {
-                    let singleCat = {
-                        idOld: cat.id,
-                        name: cat.name,
-                        position: cat.position,
-                        rawPosition: cat.rawPosition
-                    };
+    static serializeCategories(guildToCopy) {
+        let categoryCollection = guildToCopy.channels.filter(c => c.type === 'category');
+        categoryCollection = categoryCollection.sort((a, b) => a.position - b.position);
+        let categories = categoryCollection.map(category => {
+            let permOverwritesCollection = category.permissionOverwrites.filter(pOver => pOver.type === 'role');
+            let permOverwrites = permOverwritesCollection.map(pOver => {
+                return {
+                    id: pOver.id,
+                    allowed: pOver.allowed.bitfield,
+                    denied: pOver.denied.bitfield,
+                };
+            });
 
-                    singleCat.permOverwrites = [];
-                    cat.permissionOverwrites.forEach((permOver) => {
-                        if (permOver.type !== 'role') return;
-
-                        let overwrite = {
-                            id: permOver.id,
-                            allowed: permOver.allowed.bitfield,
-                            denied: permOver.denied.bitfield
-                        };
-                        singleCat.permOverwrites.push(overwrite);
-                    });
-
-                    categories[cat.position] = singleCat;
-                });
-
-                return resolve(categories);
-            } catch (ex) {
-                return reject(ex);
-            }
+            return {
+                idOld: category.id,
+                name: category.name,
+                position: category.position,
+                rawPosition: category.rawPosition,
+                permOverwrites: permOverwrites,
+            };
         });
+
+        return categories;
     }
+
     /**
      * Text channel serialization.
      * Only role permission overwrites will be saved.
-     * 
-     * @param  {Collection} textChannelCollection Collection with text channels
-     * @param  {Guild} guildToCopy Original guild object
+     * The text channel collection is sorted by their
+     * rawPosition to ensure correct order afterwards.
+     * @param {Guild} guildToCopy Original guild object
+     * @returns {Object[]} Serialized text channels
      */
-    static serializeTextChannels(textChannelCollection, guildToCopy) {
-        return new Promise((resolve, reject) => {
-            try {
-                let textChannel = {};
-                textChannelCollection.forEach((tCh) => {
-                    let singleCh = {
-                        name: tCh.name,
-                        topic: tCh.topic,
-                        nsfw: tCh.nsfw,
-                        systemChannel: guildToCopy.systemChannelID === tCh.id,
-                        position: tCh.position,
-                        rawPosition: tCh.rawPosition,
-                        parentCat: tCh.parentID,
-                        permLocked: tCh.permissionsLocked ? tCh.permissionsLocked : false
-                    };
+    static serializeTextChannels(guildToCopy) {
+        let textChannelCollection = guildToCopy.channels.filter(c => c.type === 'text');
+        textChannelCollection = textChannelCollection.sort((a, b) => a.rawPosition - b.rawPosition);
+        let textChannel = textChannelCollection.map(tCh => {
+            let permOverwritesCollection = tCh.permissionOverwrites.filter(pOver => pOver.type === 'role');
+            let permOverwrites = permOverwritesCollection.map(pOver => {
+                return {
+                    id: pOver.id,
+                    allowed: pOver.allowed.bitfield,
+                    denied: pOver.denied.bitfield,
+                };
+            });
 
-                    if (tCh.permissionsLocked) {
-                        textChannel[tCh.rawPosition] = singleCh;
-                        return;
-                    }
-
-                    singleCh.permOverwrites = [];
-                    tCh.permissionOverwrites.forEach((permOver) => {
-                        if (permOver.type !== 'role') return;
-
-                        let overwrite = {
-                            id: permOver.id,
-                            allowed: permOver.allowed.bitfield,
-                            denied: permOver.denied.bitfield
-                        };
-                        singleCh.permOverwrites.push(overwrite);
-                    });
-
-                    textChannel[tCh.rawPosition] = singleCh;
-                });
-
-                return resolve(textChannel);
-            } catch (ex) {
-                return reject(ex);
-            }
+            return {
+                id: tCh.id,
+                name: tCh.name,
+                topic: tCh.topic,
+                nsfw: tCh.nsfw,
+                isSystemChannel: guildToCopy.systemChannelID === tCh.id,
+                position: tCh.position,
+                rawPosition: tCh.rawPosition,
+                parentCat: tCh.parentID,
+                permLocked: tCh.permissionsLocked ? tCh.permissionsLocked : false,
+                permOverwrites: tCh.permissionsLocked ? null : permOverwrites,
+            };
         });
+
+        return textChannel;
     }
+
     /**
      * Voice channel serialization.
      * Only role permission overwrites will be saved.
-     * 
-     * @param  {Collection} voiceChannelCollection Collection with voice channels
-     * @param  {Guild} guildToCopy Original guild object
+     * The voice channel collection is sorted by their
+     * rawPosition to ensure correct order afterwards.
+     * @param {Guild} guildToCopy Original guild object
+     * @returns {Object[]} Serialized voice channels
      */
-    static serializeVoiceChannels(voiceChannelCollection, guildToCopy) {
-        return new Promise((resolve, reject) => {
-            try {
-                let voiceChannel = {};
-                voiceChannelCollection.forEach((vCh) => {
-                    let singleCh = {
-                        name: vCh.name,
-                        position: vCh.position,
-                        rawPosition: vCh.rawPosition,
-                        parentCat: vCh.parentID,
-                        bitrate: vCh.bitrate,
-                        userLimit: vCh.userLimit,
-                        afkChannel: guildToCopy.afkChannelID === vCh.id,
-                        permLocked: vCh.permissionsLocked ? vCh.permissionsLocked : false
-                    };
+    static serializeVoiceChannels(guildToCopy) {
+        let voiceChannelCollection = guildToCopy.channels.filter(c => c.type === 'voice');
+        voiceChannelCollection = voiceChannelCollection.sort((a, b) => a.rawPosition - b.rawPosition);
+        let voiceChannel = voiceChannelCollection.map(vCh => {
+            let permOverwritesCollection = vCh.permissionOverwrites.filter(pOver => pOver.type === 'role');
+            let permOverwrites = permOverwritesCollection.map(pOver => {
+                return {
+                    id: pOver.id,
+                    allowed: pOver.allowed.bitfield,
+                    denied: pOver.denied.bitfield,
+                };
+            });
 
-                    if (vCh.permissionsLocked) {
-                        voiceChannel[vCh.rawPosition] = singleCh;
-                        return;
-                    }
-
-                    singleCh.permOverwrites = [];
-                    vCh.permissionOverwrites.forEach((permOver) => {
-                        if (permOver.type !== 'role') return;
-
-                        let overwrite = {
-                            id: permOver.id,
-                            allowed: permOver.allowed.bitfield,
-                            denied: permOver.denied.bitfield
-                        };
-                        singleCh.permOverwrites.push(overwrite);
-                    });
-
-                    voiceChannel[vCh.rawPosition] = singleCh;
-                });
-
-                return resolve(voiceChannel);
-            } catch (ex) {
-                return reject(ex);
-            }
+            return {
+                id: vCh.id,
+                name: vCh.name,
+                position: vCh.position,
+                rawPosition: vCh.rawPosition,
+                parentCat: vCh.parentID,
+                bitrate: vCh.bitrate,
+                userLimit: vCh.userLimit,
+                isAfkChannel: guildToCopy.afkChannelID === vCh.id,
+                permLocked: vCh.permissionsLocked ? vCh.permissionsLocked : false,
+                permOverwrites: vCh.permissionsLocked ? null : permOverwrites,
+            };
         });
+
+        return voiceChannel;
     }
+
     /**
      * Emoji serialization.
-     * 
-     * @param  {Collection} emojiCollection Collection with emojis
+     * @param {Guild} guildToCopy Original guild object
+     * @returns {Object[]} Serialized emojis
      */
-    static serializeEmojis(emojiCollection) {
-        return new Promise((resolve, reject) => {
-            try {
-                let emojis = {};
-                let step = 0;
-                emojiCollection.forEach((emoji) => {
-                    let singleEmoji = {
-                        name: emoji.name,
-                        url: emoji.url
-                    };
+    static serializeEmojis(guildToCopy) {
+        return guildToCopy.emojis.map(emoji => {
+            return {
+                name: emoji.name,
+                url: emoji.url,
+            };
+        });
+    }
 
-                    emojis[step++] = singleEmoji;
-                });
-
-                return resolve(emojis);
-            } catch (ex) {
-                return reject(ex);
-            }
+    /**
+     * Banned user serialization.
+     * Original ban reasons will be copied over if available.
+     * @param {Collection} banCollection Banned users Collection
+     * @returns {Object[]} Serialized banned users
+     */
+    static serializeBans(banCollection) {
+        return banCollection.map(ban => {
+            return {
+                userId: ban.user.id,
+                reason: ban.reason || null,
+            };
         });
     }
 }

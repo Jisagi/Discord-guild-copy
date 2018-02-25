@@ -1,74 +1,91 @@
-﻿const copyEmojis = require('../settings.json').copyEmojis;
-const debug = require('../settings.json').debug;
+const { copyEmojis, copyBans, debug } = require('../settings.json');
+const { Permissions, Collection } = require('discord.js');
+const { validateBitrate, validateUserLimit } = require('./functions');
+const Logger = require('./logger');
 
 class Creator {
     /**
      * New Guild creation.
-     * Emojis will be skipped if deactivated in the settings.
-     * 
-     * @param  {Client} client Discord Client
-     * @param  {Object} guildData Serialized guild data
-     * @param  {string} newGuildId New guild id
+     * Emojis/Bans will be skipped if deactivated in the settings.
+     * @param {Client} client Discord Client
+     * @param {Object} guildData Serialized guild data
+     * @param {string} newGuildId New guild id
+     * @param {string} newGuildAdminRoleId New guild Administrator role id
+     * @returns {Object} Promise which resolves when finished
      */
-    static setData(client, guildData, newGuildId) {
+    static setData(client, guildData, newGuildId, newGuildAdminRoleId) {
         return new Promise(async (resolve, reject) => {
             try {
                 let newGuild = client.guilds.get(newGuildId);
+                guildData.references = {};
 
-                // general
-                console.log(`${guildData.step++}. Setting general data`);
+                // General
+                Logger.logMessage(`${guildData.step++}. Setting general data`);
                 await this.setGeneralData(guildData, newGuild);
 
-                // roles
-                if (guildData.roles !== null) {
-                    console.log(`${guildData.step++}. Creating roles`);
-                    guildData = await this.createRoles(guildData, newGuild);
+                // Roles
+                if (guildData.roles.length) {
+                    Logger.logMessage(`${guildData.step++}. Creating roles`);
+                    guildData.references.roles = await this.createRoles(guildData, newGuild);
                 }
 
-                // categories
-                if (guildData.categories !== null) {
-                    console.log(`${guildData.step++}. Creating categories`);
-                    guildData = await this.createCategories(guildData, newGuild, client);
+                // Categories
+                if (guildData.categories.length) {
+                    Logger.logMessage(`${guildData.step++}. Creating categories`);
+                    guildData.references.categories = await this.createCategories(guildData, newGuild);
                 }
 
-                // text channel
-                if (guildData.textChannel !== null) {
-                    console.log(`${guildData.step++}. Creating text channels`);
-                    await this.createTextChannel(guildData, newGuild, client);
+                // Text channel
+                if (guildData.textChannel.length) {
+                    Logger.logMessage(`${guildData.step++}. Creating text channels`);
+                    await this.createTextChannel(guildData, newGuild);
                 }
 
-                // voice channel
-                if (guildData.voiceChannel !== null) {
-                    console.log(`${guildData.step++}. Creating voice channels`);
-                    await this.createVoiceChannel(guildData, newGuild, client);
+                // Voice channel
+                if (guildData.voiceChannel.length) {
+                    Logger.logMessage(`${guildData.step++}. Creating voice channels`);
+                    await this.createVoiceChannel(guildData, newGuild);
                 }
 
-                // emojis
-                if (copyEmojis && guildData.emojis !== null) {
-                    console.log(`${guildData.step++}. Creating emojis`);
+                // Emojis
+                if (copyEmojis && guildData.emojis.length) {
+                    Logger.logMessage(`${guildData.step++}. Creating emojis`);
                     await this.createEmojis(guildData, newGuild);
                 }
 
-                return resolve(guildData);
-            } catch (ex) {
-                return reject(ex);
+                // Bans
+                if (copyBans && guildData.bans.length) {
+                    Logger.logMessage(`${guildData.step++}. Banning users`);
+                    guildData = await this.createBans(guildData, newGuild);
+                }
+
+                // Finalize
+                guildData = await this.finalize(client, newGuildId, newGuildAdminRoleId, guildData);
+                Logger.logMessage(`${guildData.step++}. Done!`);
+
+                return resolve();
+            } catch (err) {
+                return reject(err);
             }
         });
     }
+
     /**
      * Setting of gerenal data.
      * Non valid regions (like vip ones) will be set to 'us-central'.
-     * AFK Channel/Timeout: Will be set after creation
+     * AFK Channel/Timeout: Will be set after voice channel creation
      * System channel: same as AFK Channel/Timeout
-     * 
-     * @param  {Object} guildData Serialized guild data
-     * @param  {Guild} newGuild New guild
+     * @param {Object} guildData Serialized guild data
+     * @param {Guild} newGuild New guild
+     * @returns {Object} Promise which resolves when finished
      */
     static setGeneralData(guildData, newGuild) {
         return new Promise(async (resolve, reject) => {
             try {
                 let general = guildData.general;
-                let allowedRegions = ['brazil', 'us-west', 'singapore', 'eu-central', 'hongkong', 'us-south', 'amsterdam', 'us-central', 'london', 'us-east', 'sydney', 'japan', 'eu-west', 'frankfurt', 'russia'];
+                let allowedRegions = ['brazil', 'us-west', 'singapore', 'eu-central', 'hongkong',
+                    'us-south', 'amsterdam', 'us-central', 'london', 'us-east', 'sydney', 'japan',
+                    'eu-west', 'frankfurt', 'russia'];
                 let region = allowedRegions.includes(general.region) ? general.region : 'us-central';
 
                 await newGuild.setName(general.name);
@@ -78,11 +95,12 @@ class Creator {
                 await newGuild.setExplicitContentFilter(general.explicitContentFilter);
 
                 return resolve();
-            } catch (ex) {
-                return reject(ex);
+            } catch (err) {
+                return reject(err);
             }
         });
     }
+
     /**
      * Role creation.
      * @everyone role permissions will be overwritten.
@@ -90,209 +108,281 @@ class Creator {
      * the sorting will be off and the created roles will have a
      * higher position than the 'guildcopy' role and can therefore
      * not be modified anymore by the bot.
-     * 
-     * @param  {Object} guildData Serialized guild data
-     * @param  {Guild} newGuild New guild
+     * @param {Object} guildData Serialized guild data
+     * @param {Guild} newGuild New guild
+     * @returns {Object} Promise which resolves into roleReferences
      */
     static createRoles(guildData, newGuild) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-                guildData.references = {};
-                guildData.references.roles = {};
-
-                for (let role in guildData.roles) {
-                    let originalRole = guildData.roles[role];
-
-                    if (!originalRole.defaultRole) {
-                        // create new role
+                let promises = [];
+                let roleReferences = new Collection();
+                guildData.roles.forEach(role => {
+                    if (role.defaultRole) {
+                        // Edit existing @everyone
+                        let everyoneRole = newGuild.defaultRole;
+                        promises.push(everyoneRole.setPermissions(role.permBitfield));
+                        roleReferences.set(role.idOld, { new: newGuild.defaultRole, old: role });
+                    } else {
+                        // Create new role
                         let newRole = {
                             data: {
-                                name: originalRole.name,
-                                color: originalRole.hexColor,
-                                hoist: originalRole.hoist,
-                                mentionable: originalRole.mentionable,
-                                permissions: originalRole.permBitfield,
-                                position: 1 // prevents wrong role sorting
-                            }
+                                name: role.name,
+                                color: role.hexColor,
+                                hoist: role.hoist,
+                                mentionable: role.mentionable,
+                                permissions: role.permBitfield,
+                            },
                         };
 
-                        if (debug) console.log(`${guildData.step - 1}.${counter++} Creating role \"${originalRole.name}\"`);
-                        let createdRole = await newGuild.roles.create(newRole);
-                        guildData.roles[role].idNew = createdRole.id;
-                        guildData.references.roles[originalRole.idOld] = createdRole.id;
-                    } else {
-                        // change existing @everyone
-                        let everyoneRole = newGuild.defaultRole;
-                        await everyoneRole.setPermissions(originalRole.permBitfield);
-                        guildData.references.roles[originalRole.idOld] = everyoneRole.id;
+                        let promise = newGuild.roles.create(newRole).then(createdRole => {
+                            if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created role "${createdRole.name}"`);
+                            roleReferences.set(role.idOld, { new: createdRole, old: role });
+                        });
+                        promises.push(promise);
                     }
-                }
+                });
 
-                return resolve(guildData);
-            } catch (ex) {
-                return reject(ex);
+                await Promise.all(promises);
+
+                return resolve(roleReferences);
+            } catch (err) {
+                return reject(err);
             }
         });
     }
+
     /**
      * Category creation.
-     * 
-     * @param  {Object} guildData Serialized guild data
-     * @param  {guild} newGuild New guild
-     * @param  {Client} client Discord Client
+     * @param {Object} guildData Serialized guild data
+     * @param {guild} newGuild New guild
+     * @returns {Object} Promise which resolves into categoryReferences
      */
-    static createCategories(guildData, newGuild, client) {
+    static createCategories(guildData, newGuild) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-                guildData.references.categories = {};
-
-                for (let category in guildData.categories) {
-                    let originalCategory = guildData.categories[category];
-
-                    let options = {
-                        type: 'category'
-                    };
-                    options.overwrites = [];
-                    originalCategory.permOverwrites.forEach(origPermOver => {
-                        let overwrite = {
-                            id: guildData.references.roles[origPermOver.id],
-                            allowed: new client.objects.discord.Permissions(origPermOver.allowed),
-                            denied: new client.objects.discord.Permissions(origPermOver.denied)
+                let promises = [];
+                let categoryReferences = new Collection();
+                guildData.categories.forEach(category => {
+                    let overwrites = category.permOverwrites.map(permOver => {
+                        return {
+                            id: guildData.references.roles.get(permOver.id).new.id,
+                            allowed: new Permissions(permOver.allowed),
+                            denied: new Permissions(permOver.denied),
                         };
-                        options.overwrites.push(overwrite);
                     });
+                    let options = {
+                        type: 'category',
+                        overwrites: overwrites,
+                    };
 
-                    if (debug) console.log(`${guildData.step - 1}.${counter++} Creating catergory \"${originalCategory.name}\"`);
-                    let newCategoryChannel = await newGuild.channels.create(originalCategory.name, options);
-                    guildData.categories[category].idNew = newCategoryChannel.id;
-                    guildData.references.categories[originalCategory.idOld] = originalCategory.idNew;
-                }
+                    let promise = newGuild.channels.create(category.name, options).then(createdCategory => {
+                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created catergory "${createdCategory.name}"`);
+                        categoryReferences.set(category.idOld, { new: createdCategory, old: category });
+                    });
+                    promises.push(promise);
+                });
 
-                return resolve(guildData);
-            } catch (ex) {
-                return reject(ex);
+                await Promise.all(promises);
+
+                return resolve(categoryReferences);
+            } catch (err) {
+                return reject(err);
             }
         });
     }
+
     /**
      * Text channel creation.
-     * Topic and System Channel are set after creation.
-     * 
-     * @param  {Object} guildData Serialized guild data
-     * @param  {Guild} newGuild New guild
-     * @param  {Client} client Discord Client
+     * Topic and systemChannel are set after creation.
+     * @param {Object} guildData Serialized guild data
+     * @param {Guild} newGuild New guild
+     * @param {Client} client Discord Client
+     * @returns {Object} Promise which resolves when finished
      */
-    static createTextChannel(guildData, newGuild, client) {
+    static createTextChannel(guildData, newGuild) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-
-                for (let textChannel in guildData.textChannel) {
-                    let origTextCh = guildData.textChannel[textChannel];
-
+                let promises = [];
+                let newSystemChannel = null;
+                let channelWithTopics = new Collection();
+                guildData.textChannel.forEach(textChannel => {
                     let options = {
                         type: 'text',
-                        nsfw: origTextCh.nsfw
+                        nsfw: textChannel.nsfw,
                     };
-                    if (origTextCh.parentCat) options.parent = guildData.references.categories[origTextCh.parentCat];
-
-                    if (!origTextCh.permLocked) {
-                        options.overwrites = [];
-                        origTextCh.permOverwrites.forEach(origPermOver => {
-                            let overwrite = {
-                                id: guildData.references.roles[origPermOver.id],
-                                allowed: new client.objects.discord.Permissions(origPermOver.allowed),
-                                denied: new client.objects.discord.Permissions(origPermOver.denied)
+                    if (textChannel.parentCat) {
+                        options.parent = guildData.references.categories.get(textChannel.parentCat).new.id;
+                    }
+                    if (!textChannel.permLocked) {
+                        options.overwrites = textChannel.permOverwrites.map(permOver => {
+                            return {
+                                id: guildData.references.roles.get(permOver.id).new.id,
+                                allowed: new Permissions(permOver.allowed),
+                                denied: new Permissions(permOver.denied),
                             };
-                            options.overwrites.push(overwrite);
                         });
                     }
 
-                    if (debug) console.log(`${guildData.step - 1}.${counter++} Creating ${origTextCh.nsfw ? 'nsfw ' : ''}text channel \"${origTextCh.name}\"${origTextCh.parentCat ? ` (category: ${newGuild.channels.get(guildData.references.categories[origTextCh.parentCat]).name})` : ''}`);
-                    let newTextChannel = await newGuild.channels.create(origTextCh.name, options);
-                    if (origTextCh.topic) await newTextChannel.setTopic(origTextCh.topic);
-                    if (origTextCh.systemChannel) await newGuild.setSystemChannel(newTextChannel.id);
-                }
+                    let promise = newGuild.channels.create(textChannel.name, options).then(createdChannel => {
+                        if (textChannel.isSystemChannel) newSystemChannel = createdChannel.id;
+                        if (textChannel.topic) channelWithTopics.set(createdChannel.id, { newCh: createdChannel, topic: textChannel.topic });
+                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created text channel "${createdChannel.name}"`);
+                    });
+                    promises.push(promise);
+                });
+
+                await Promise.all(promises);
+                if (newSystemChannel) await newGuild.setSystemChannel(newSystemChannel);
+                promises = [];
+                channelWithTopics.forEach(ch => promises.push(ch.newCh.setTopic(ch.topic)));
+                await Promise.all(promises);
 
                 return resolve();
-            } catch (ex) {
-                return reject(ex);
+            } catch (err) {
+                return reject(err);
             }
         });
     }
+
     /**
      * Voice Channel creation.
      * AFK Channel/Timeout are set after creation.
-     * Bitrate is checked before creation because
-     * some guilds have bitrates >96.
-     * 
-     * @param  {Object} guildData Serialized guild data
-     * @param  {Guild} newGuild New guild
-     * @param  {Client} client Discord Client
+     * @param {Object} guildData Serialized guild data
+     * @param {Guild} newGuild New guild
+     * @param {Client} client Discord Client
+     * @returns {Object} Promise which resolves when finished
      */
-    static createVoiceChannel(guildData, newGuild, client) {
+    static createVoiceChannel(guildData, newGuild) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-
-                for (let voiceChannel in guildData.voiceChannel) {
-                    let origVoiceCh = guildData.voiceChannel[voiceChannel];
-
+                let promises = [];
+                let newAfkChannel = null;
+                guildData.voiceChannel.forEach(voiceChannel => {
                     let options = {
                         type: 'voice',
-                        bitrate: (origVoiceCh.bitrate > 96 ? 96 : origVoiceCh.bitrate) * 1000,
-                        userLimit: origVoiceCh.userLimit,
+                        bitrate: validateBitrate(voiceChannel.bitrate),
+                        userLimit: validateUserLimit(voiceChannel.userLimit),
                     };
-                    if (origVoiceCh.parentCat) options.parent = guildData.references.categories[origVoiceCh.parentCat];
-
-                    if (!origVoiceCh.permLocked) {
-                        options.overwrites = [];
-                        origVoiceCh.permOverwrites.forEach(origPermOver => {
-                            let overwrite = {
-                                id: guildData.references.roles[origPermOver.id],
-                                allowed: new client.objects.discord.Permissions(origPermOver.allowed),
-                                denied: new client.objects.discord.Permissions(origPermOver.denied)
+                    if (voiceChannel.parentCat) {
+                        options.parent = guildData.references.categories.get(voiceChannel.parentCat).new.id;
+                    }
+                    if (!voiceChannel.permLocked) {
+                        options.overwrites = voiceChannel.permOverwrites.map(permOver => {
+                            return {
+                                id: guildData.references.roles.get(permOver.id).new.id,
+                                allowed: new Permissions(permOver.allowed),
+                                denied: new Permissions(permOver.denied),
                             };
-                            options.overwrites.push(overwrite);
                         });
                     }
 
-                    if (debug) console.log(`${guildData.step - 1}.${counter++} Creating voice channel \"${origVoiceCh.name}\"${origVoiceCh.parentCat ? ` (category: ${newGuild.channels.get(guildData.references.categories[origVoiceCh.parentCat]).name})` : ''}`);
-                    let newVoiceChannel = await newGuild.channels.create(origVoiceCh.name, options);
-                    if (origVoiceCh.afkChannel) await newGuild.setAFKChannel(newVoiceChannel.id);
-                }
+                    let promise = newGuild.channels.create(voiceChannel.name, options).then(createdChannel => {
+                        if (voiceChannel.isAfkChannel) newAfkChannel = createdChannel.id;
+                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created voice channel "${createdChannel.name}"`);
+                    });
+                    promises.push(promise);
+                });
 
+                await Promise.all(promises);
+                if (newAfkChannel) await newGuild.setAFKChannel(newAfkChannel);
                 await newGuild.setAFKTimeout(guildData.general.afkTimeout);
 
                 return resolve();
-            } catch (ex) {
-                return reject(ex);
+            } catch (err) {
+                return reject(err);
             }
         });
     }
+
     /**
      * Emoji Creation.
-     * Only executed if activated in the settings.
-     * 
-     * @param  {Object} guildData Serialized guild data
-     * @param  {Guild} newGuild New guild
+     * Only executed if enabled in the settings.
+     * @param {Object} guildData Serialized guild data
+     * @param {Guild} newGuild New guild
+     * @returns {Object} Promise which resolves when finished
      */
     static createEmojis(guildData, newGuild) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
+                let promises = [];
+                guildData.emojis.forEach(emoji => {
+                    let promise = newGuild.emojis.create(emoji.url, emoji.name).then(createdEmoji => {
+                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created emoji: ${createdEmoji.name}`);
+                    });
+                    promises.push(promise);
+                });
 
-                for (let emoji in guildData.emojis) {
-                    let origEmoji = guildData.emojis[emoji];
-                    if (debug) console.log(`${guildData.step - 1}.${counter++} Creating emoji: ${origEmoji.name}`);
-                    await newGuild.emojis.create(origEmoji.url, origEmoji.name);
-                }
+                await Promise.all(promises);
 
                 return resolve();
-            } catch (ex) {
-                return reject(ex);
+            } catch (err) {
+                return reject(err);
+            }
+        });
+    }
+
+    /**
+     * Banning users.
+     * Only executed if enabled in the settings.
+     * @param {Object} guildData Serialized guild data
+     * @param {Guild} newGuild New guild
+     * @returns {Object} Promise which resolves when finished
+     */
+    static createBans(guildData, newGuild) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let counter = 1;
+                let promises = [];
+                guildData.bans.forEach(ban => {
+                    let promise = newGuild.members.ban(ban.userId, { reason: ban.reason }).then(newBan => {
+                        let username = newBan.user ? newBan.user.tag : newBan.tag || newBan;
+                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Banned user ${username}`);
+                    });
+                    promises.push(promise);
+                });
+
+                await Promise.all(promises);
+
+                return resolve();
+            } catch (err) {
+                return reject(err);
+            }
+        });
+    }
+
+    /**
+     * Final message after all data has been created.
+     * If at least one text channel exists, the message
+     * will be posted in the first one, otherwise in the console.
+     * @param {Client} client Discord Client
+     * @param {string} newGuildId New guild id
+     * @param {string} newGuildAdminRoleId New guild Administrator role id
+     * @param {Object} guildData Serialized guild data
+     * @returns {Object} Promise which resolves into guildData
+     */
+    static finalize(client, newGuildId, newGuildAdminRoleId, guildData) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let newGuild = client.guilds.get(newGuildId);
+                let deleteableAdminRole = newGuild.roles.get(newGuildAdminRoleId);
+                let textChs = newGuild.channels.filter(c => c.type === 'text');
+
+                /* Add statistics post or something similar */
+
+                let outText = `Guild copy finished!\n` +
+                    `The last thing to do is to delete the \`${deleteableAdminRole.name}\` role.`;
+                if (textChs.size > 0) await textChs.first().send(`@everyone ${outText}`);
+                else Logger.logMessage(`${guildData.step++}. ${outText}`);
+
+                return resolve(guildData);
+            } catch (err) {
+                return reject(err);
             }
         });
     }

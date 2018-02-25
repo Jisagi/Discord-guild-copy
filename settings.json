@@ -3,6 +3,7 @@
     "newGuildId": "",
     "newGuildAdminRoleId": "",
     "copyEmojis": false,
+    "copyBans": false,
     "debug": false,
     "token": ""
 }

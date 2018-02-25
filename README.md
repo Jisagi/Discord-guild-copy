@@ -9,17 +9,17 @@ Did you ever want to create a copy of a guild? Now you can! There is no need to 
 - Roles (also managed ones)
 - Role permissions for categories and text/voice channels (no user specific ones)
 - Emojis (see [Disclaimer](https://github.com/Jisagi/Discord-guild-copy#disclaimer))
+- Bans
 
 ### What will not be copied
 - Chat history
-- Bans
 - Invites
 - Webhooks
 - Audit Logs
 - Third party integrations (Twitch/Youtube)
 
 ## What do I need
-- [Node.js](https://nodejs.org/) any version >= 8.0.0 should work (discord.js is the limiting factor here)
+- [Node.js](https://nodejs.org/) any version >= 8.0.0 should work
 - [discord.js](https://github.com/hydrabolt/discord.js) The latest version **_not the stable release._** ([Explanation](https://github.com/Jisagi/Discord-guild-copy#why-using-120-dev-and-not-the-stable-release))
   - This will automatically be downloaded. See Installation for more information.
 - A Discord account with a bot user
@@ -31,9 +31,7 @@ Did you ever want to create a copy of a guild? Now you can! There is no need to 
 
 According to the recent [statement](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots000000) of the discord team, any kind of user accounts including so called SelfBots are forbidden. The script still allows you to backup a guild with a user account and stop after, but i still don't recommend it. Therefore, if you use this on a user account, it will be **at your own risk with the possibility of your account being banned from discord permanently!** Please don't come to me and complain if you get banned using this on a user account.
 
-The script executes quite a few api calls, therefore the execution on a user account is blocked at least to a certain point (see below). If you provide a user account token the script will backup the original guild and save it to a file but then stop the execution with a warning. From there on you just replace the user token with a bot token and rerun the script. It will automatically load the backup file and do its job.
-
-The most problematic part are the emojis. The deletion and creation of a guild with maxed out emojis will hit the rate limit. By default emojis will not be copied over to the new guild. If you only have around 25 or less emojis you might not run into a rate limit. I don't recommend using this if you have more.
+If you provide a user account token the script will backup the original guild and save it to a file but then stop the execution with a warning. You then just replace the user token with a bot token and rerun the script. It will automatically load the backup file and do its job.
 
 ## Installation & Usage
 1. Download the repository from github
@@ -44,31 +42,34 @@ The most problematic part are the emojis. The deletion and creation of a guild w
 6. Run `node copy.js` in the console to start the script
 
 ## Settings
-To get the id of a guild go into your discord client settings > Appearance and enable developer mode. If you now right click on a guild you can select 'Copy ID'.
+To get the id of a guild open your client settings -> Appearance and then enable developer mode. If you now right click on a guild you can select 'Copy ID'.
 
 | Variable | Explanation |
 | --- | --- |
 | originalGuildId | The id of the guild you want to clone. Can be left blank if a guildData.json already exists. |
 | newGuildId | The id of the new guild you want to clone to. |
 | newGuildAdminRoleId | The id of a role with administrator permissions. The bot needs to have this role on the new guild! You can manually create a new role called 'guildcopy' and the script will automatically use it. If you do so, just leave this field empty. |
-| copyEmojis | default: false - set to true to copy emojis (see [Disclaimer](https://github.com/Jisagi/Discord-guild-copy#disclaimer)) |
+| copyEmojis | default: false - set to true to copy emojis (see also [Common Behaviour](https://github.com/Jisagi/Discord-guild-copy#common-behaviour)) |
+| copyBans | default: false - set to true to copy banned users The bot needs to have the BAN_MEMBERS permission on the original guild if you enable this! |
 | debug | default: false - set to true for a more detailed general and error output e.g. when creating an issue |
-| token | Your account token. The user/bot does not need any permissions on the original guild. |
+| token | Your account token. The bot does not need any permissions on the original guild (only exception: copyBans=true). |
 
 ## Common Behaviour
 - New guild cleanup
-  - Emoji Deletion: This will take time, especially if there are lot of them. Expect at least a few minutes if there are more than 30. You can either delete them manually and then running the script or using a completely new and empty guild altogether.
+  - Emoji Creation/Deletion: This will take time, especially if there are lot of them. Expect a few rateLimits when 'debug' is on. If 'copyEmojis' is disabled, emojis on the new server won't be deleted or new ones added.
+  - Bans Creation/Deletion: see 'Emoji Creation/Deletion' above
   - Channel Deletion: The client might still show deleted channels despite them already being deleted. To fix this, just restart your discord client. You can do this while the script is running.
 - Region
   - Some guilds have VIP regions which cannot be used by normal guilds. Therefore if you copy such a guild the region will be set to us-central.
 
-## Why using 12.0-dev and not the stable release
-The latest stable release 11.2.1 does not support categories yet and the upcoming 11.3 release does not support some features concerning Permission Overwrites. As soon as 12.0 get its stable release I will change this.
+## Why using v12.0-dev and not the stable release
+This was developed when 11.2.1 was the latest version which wasn't able to provide all needed features (e.g. categories, permsissions) to clone a whole guild. A port/rewrite to 11.3.X (or any version <12.0) and then to 12.0 again would just be unnecessary busywork.
+I will probably switch to the stable release as soon as 12.0 is stable.
 
 I try to check new commits for changes which might break something but if I miss one, feel free to remind me ;D
 
 ## Issues
-Most of the common issues are displayed in the console while running the script. If you encounter crashes or any other weird behaviour not listed [here](https://github.com/Jisagi/Discord-guild-copy#common-behaviour) feel free to create an [issue](https://github.com/Jisagi/Discord-guild-copy/issues/new).
+Most of the common issues are displayed in the console while running the script. If you encounter crashes or any other weird behaviour not listed [here](https://github.com/Jisagi/Discord-guild-copy#common-behaviour) feel free to create an [issue](https://github.com/Jisagi/Discord-guild-copy/issues/new). The script creates logs in the 'logs' folder. Feel free to upload those to something like [pastebin](https://pastebin.com/) and add them to the created issue to help me find the problem.
 
 ### Can I suggest new features (or complain about ugly code)
 Of course, just create an [issue](https://github.com/Jisagi/Discord-guild-copy/issues/new) or a [pull request](https://github.com/Jisagi/Discord-guild-copy/compare).
