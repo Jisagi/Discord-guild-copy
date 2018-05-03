@@ -9,9 +9,10 @@ class Serializer {
      * @param {string} originalGuildId The id of the original guild
      * @param {Collection} banCollection Banned users
      * @param {Object} guildData Serialized guild data
+     * @param {string} backupFile Backup JSON file name
      * @returns {Object} guildData
      */
-    static serializeOldGuild(client, originalGuildId, banCollection, guildData) {
+    static serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile) {
         // Check
         let guildToCopy = client.guilds.get(originalGuildId);
         if (!guildToCopy.available) throw new Error('Original guild not available. Please try again later.');
@@ -52,7 +53,7 @@ class Serializer {
 
         // Save data to file
         Logger.logMessage(`${guildData.step++}. Saving guild data to file`);
-        fs.writeFileSync('guildData.json', JSON.stringify(guildData));
+        fs.writeFileSync(backupFile, JSON.stringify(guildData));
         Logger.logMessage(`${guildData.step++}. Serialization finished and data saved`);
 
         return guildData;

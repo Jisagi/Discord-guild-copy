@@ -29,9 +29,7 @@ Did you ever want to create a copy of a guild? Now you can! There is no need to 
 ## Disclaimer
 **_Use this script at your own risk!_**
 
-According to the recent [statement](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots000000) of the discord team, any kind of user accounts including so called SelfBots are forbidden. The script still allows you to backup a guild with a user account and stop after, but i still don't recommend it. Therefore, if you use this on a user account, it will be **at your own risk with the possibility of your account being banned from discord permanently!** Please don't come to me and complain if you get banned using this on a user account.
-
-If you provide a user account token the script will backup the original guild and save it to a file but then stop the execution with a warning. You then just replace the user token with a bot token and rerun the script. It will automatically load the backup file and do its job.
+According to the recent [statement](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots000000) of the discord team, any kind of user accounts including so called SelfBots are forbidden. The script must be run with a bot user token.
 
 ## Installation & Usage
 1. Download the repository from github
@@ -39,7 +37,7 @@ If you provide a user account token the script will backup the original guild an
 3. Navigate into the extracted folder
 4. Edit the `settings.json` and fill in all necessary data (see [Settings](https://github.com/Jisagi/Discord-guild-copy#settings) for more information)
 5. Open the console and run `npm install` (on windows you can shift + right click inside the project folder folder and select 'open command prompt here')
-6. Run `node copy.js` in the console to start the script
+6. Run `node copy.js` in the console to print usage
 
 ## Settings
 To get the id of a guild open your client settings -> Appearance and then enable developer mode. If you now right click on a guild you can select 'Copy ID'.
