@@ -11,7 +11,7 @@ const client = new Discord.Client();
 let isBackup = false;
 let isRestore = false;
 let isClone = false;
-let backupFile = '';
+let backupFile = 'guildData.json';
 
 client.on('ready', async () => {
     if (!client.user.bot) {
