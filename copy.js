@@ -39,7 +39,7 @@ client.on('ready', async () => {
             guildData.step = 1;
             Logger.logMessage(`${guildData.step++}. Serialized data was found and will be used.`);
         } else if (isRestore) {
-            throw new Error('Specified restore but .');
+            throw new Error(`Specified restore but guild backup '${backupFile}' doesn't exist.`);
         } else {
             if (!client.guilds.has(originalGuildId)) {
                 throw new Error('Original guild to copy does not exist. Please check if the id in the ' +
@@ -56,7 +56,7 @@ client.on('ready', async () => {
 
         // Stop on backup only
         if (isBackup) {
-            Logger.logMessage(`${guildData.step}. Program execution stopped because backup was specified.`);
+            Logger.logMessage(`${guildData.step}. Program execution finished because backup was specified.`);
             await client.destroy();
             return process.exit();
         }
@@ -85,8 +85,8 @@ client.on('rateLimit', rateLimitObj => {
 function printUsage () {
     console.log(
         `Usage:
-  * Backup guild to file: node copy.js backup <backupFile>
-  * Restore guild from file: node copy.js restore <backupFile>
+  * Backup guild to file: node copy.js backup <backupFile (optional)>
+  * Restore guild from file: node copy.js restore <backupFile (optional)>
   * Clone guild to guild: node copy.js clone`
     );
     process.exit(1);
@@ -96,14 +96,11 @@ function main () {
     const args = process.argv.slice(2)
     if (args.length < 1 || !['backup', 'restore', 'clone'].includes(args[0])) {
         printUsage();
-    } else if (args.length < 2 && ['backup', 'restore'].includes(args[0])) {
-        printUsage();
+    } else if (args.length >= 2 && ['backup', 'restore'].includes(args[0])) {
+        backupFile = args[1];
     }
     isBackup = args[0] === 'backup';
     isRestore = args[0] === 'restore';
-    if (isBackup || isRestore) {
-        backupFile = args[1];
-    }
     isClone = args[0] === 'clone';
     client.login(settings.token);
 }
