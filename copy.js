@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const Discord = require('discord.js');
 const Validator = require('./objects/validator');
 const Serializer = require('./objects/serializer');
@@ -97,7 +98,11 @@ function main () {
     if (args.length < 1 || !['backup', 'restore', 'clone'].includes(args[0])) {
         printUsage();
     } else if (args.length >= 2 && ['backup', 'restore'].includes(args[0])) {
-        backupFile = args[1];
+        if (path.extname(args[1]) === '.json') {
+          backupFile = args[1];
+        } else {
+          backupFile = args[1] + '.json';
+        }
     }
     isBackup = args[0] === 'backup';
     isRestore = args[0] === 'restore';
