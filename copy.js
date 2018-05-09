@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const Discord = require('discord.js');
 const Validator = require('./objects/validator');
 const Serializer = require('./objects/serializer');
@@ -8,7 +9,16 @@ const Logger = require('./objects/logger');
 const settings = require('./settings.json');
 const client = new Discord.Client();
 
+let isBackup = false;
+let isRestore = false;
+let isClone = false;
+let backupFile = 'guildData.json';
+
 client.on('ready', async () => {
+    if (!client.user.bot) {
+        Logger.logError('Specified user token is not a bot user token.');
+        return process.exit(1);
+    }
     Logger.logMessage(`Successfully logged in as ${client.user.tag}. Starting script.`);
 
     let originalGuildId = settings.originalGuildId;
@@ -19,16 +29,18 @@ client.on('ready', async () => {
     };
 
     try {
-        // Settings Validation
+        // Settings Validation only on restore or clone
         let data = { changed: false };
-        if (client.user.bot) data = Validator.validateSettings(client, originalGuildId, newGuildId, newGuildAdminRoleId);
+        if (!isBackup) data = Validator.validateSettings(client, originalGuildId, newGuildId, newGuildAdminRoleId);
         if (data.changed) newGuildAdminRoleId = data.newGuildAdminRoleId;
 
         // Load/Create serialized guildData
-        if (fs.existsSync('guildData.json')) {
-            guildData = require('./guildData.json');
+        if (fs.existsSync(backupFile) && isRestore) {
+            guildData = require(`./${backupFile}`);
             guildData.step = 1;
             Logger.logMessage(`${guildData.step++}. Serialized data was found and will be used.`);
+        } else if (isRestore) {
+            throw new Error(`Specified restore but guild backup '${backupFile}' doesn't exist.`);
         } else {
             if (!client.guilds.has(originalGuildId)) {
                 throw new Error('Original guild to copy does not exist. Please check if the id in the ' +
@@ -40,13 +52,13 @@ client.on('ready', async () => {
             } catch (banError) {
                 throw new Error('You tried to copy bans without giving the bot the BAN_MEMBERS permissions on the original guild.');
             }
-            guildData = Serializer.serializeOldGuild(client, originalGuildId, banCollection, guildData);
+            guildData = Serializer.serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile);
         }
 
-        // Stop on user account
-        if (!client.user.bot) {
-            Logger.logMessage(`${guildData.step}. Program execution stopped because the provided token ` +
-                `is a user account. Please use a bot account with the serialized data.`);
+        // Stop on backup only
+        if (isBackup) {
+            Logger.logMessage(`${guildData.step}. Program execution finished because backup was specified.`);
+            await client.destroy();
             return process.exit();
         }
 
@@ -59,7 +71,7 @@ client.on('ready', async () => {
         Logger.logError(err);
     }
 
-    if (client.user.bot) await client.destroy();
+    await client.destroy();
     return process.exit();
 });
 
@@ -71,4 +83,31 @@ client.on('rateLimit', rateLimitObj => {
     }
 });
 
-client.login(settings.token);
+function printUsage () {
+    console.log(
+        `Usage:
+  * Backup guild to file: node copy.js backup <backupFile (optional)>
+  * Restore guild from file: node copy.js restore <backupFile (optional)>
+  * Clone guild to guild: node copy.js clone`
+    );
+    process.exit(1);
+}
+
+function main () {
+    const args = process.argv.slice(2)
+    if (args.length < 1 || !['backup', 'restore', 'clone'].includes(args[0])) {
+        printUsage();
+    } else if (args.length >= 2 && ['backup', 'restore'].includes(args[0])) {
+        if (path.extname(args[1]) === '.json') {
+          backupFile = args[1];
+        } else {
+          backupFile = args[1] + '.json';
+        }
+    }
+    isBackup = args[0] === 'backup';
+    isRestore = args[0] === 'restore';
+    isClone = args[0] === 'clone';
+    client.login(settings.token);
+}
+
+main();
