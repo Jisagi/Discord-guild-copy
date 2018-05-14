@@ -24,7 +24,7 @@ class Validator {
         if (newGuild.roles.has(newGuildAdminRoleId)) {
             newGuildAdminRole = newGuild.roles.get(newGuildAdminRoleId);
         } else {
-            newGuildAdminRole = newGuild.roles.find('name', 'guildcopy');
+            newGuildAdminRole = newGuild.roles.find(elem => elem.name.toLowerCase() === 'guildcopy');
             if (newGuildAdminRole) {
                 data.changed = true;
                 data.newGuildAdminRoleId = newGuildAdminRole.id;

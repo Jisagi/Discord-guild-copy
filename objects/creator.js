@@ -373,8 +373,6 @@ class Creator {
                 let deleteableAdminRole = newGuild.roles.get(newGuildAdminRoleId);
                 let textChs = newGuild.channels.filter(c => c.type === 'text');
 
-                /* Add statistics post or something similar */
-
                 let outText = `Guild copy finished!\n` +
                     `The last thing to do is to delete the \`${deleteableAdminRole.name}\` role.`;
                 if (textChs.size > 0) await textChs.first().send(`@everyone ${outText}`);
