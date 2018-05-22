@@ -104,10 +104,6 @@ class Creator {
     /**
      * Role creation.
      * @everyone role permissions will be overwritten.
-     * Initial role position on creation needs to be 1, otherwise
-     * the sorting will be off and the created roles will have a
-     * higher position than the 'guildcopy' role and can therefore
-     * not be modified anymore by the bot.
      * @param {Object} guildData Serialized guild data
      * @param {Guild} newGuild New guild
      * @returns {Object} Promise which resolves into roleReferences

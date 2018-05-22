@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Discord = require('discord.js');
+const VersionControl = require('./objects/versioncontrol');
 const Validator = require('./objects/validator');
 const Serializer = require('./objects/serializer');
 const Cleaner = require('./objects/cleaner');
@@ -8,6 +9,7 @@ const Creator = require('./objects/creator');
 const Logger = require('./objects/logger');
 const settings = require('./settings.json');
 const client = new Discord.Client();
+const version = '1.0.0';
 
 let isBackup = false;
 let isRestore = false;
@@ -29,6 +31,20 @@ client.on('ready', async () => {
     };
 
     try {
+        // Check discord.js version
+        let djsVersion = require('./node_modules/discord.js/package.json').version;
+        if (djsVersion !== '12.0.0-dev') throw new Error('Please don\'t install discord.js with \'npm install discord.js\'! Installation instructions are in the README.');
+
+        // Check script version
+        let result;
+        result = await VersionControl.checkVersion(version).catch(err => {
+            return { error: err || new Error('failed') };
+        });
+        if (result.error) console.log(`${result.error}\nScript execution will resume.`)
+        else if (version !== result.version) throw new Error(`You are not using the latest script version. Please redownload the repository.`
+            + `\nYour version: ${version}\nLatest version: ${result.version}`);
+        if (!result.error) console.log('Latest script version installed');
+
         // Settings Validation only on restore or clone
         let data = { changed: false };
         if (!isBackup) data = Validator.validateSettings(client, originalGuildId, newGuildId, newGuildAdminRoleId);
@@ -83,7 +99,7 @@ client.on('rateLimit', rateLimitObj => {
     }
 });
 
-function printUsage () {
+function printUsage() {
     console.log(
         `Usage:
   * Backup guild to file: node copy.js backup <backupFile (optional)>
@@ -93,15 +109,15 @@ function printUsage () {
     process.exit(1);
 }
 
-function main () {
+function main() {
     const args = process.argv.slice(2)
     if (args.length < 1 || !['backup', 'restore', 'clone'].includes(args[0])) {
         printUsage();
     } else if (args.length >= 2 && ['backup', 'restore'].includes(args[0])) {
         if (path.extname(args[1]) === '.json') {
-          backupFile = args[1];
+            backupFile = args[1];
         } else {
-          backupFile = args[1] + '.json';
+            backupFile = args[1] + '.json';
         }
     }
     isBackup = args[0] === 'backup';
