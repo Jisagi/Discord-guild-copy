@@ -36,7 +36,7 @@ According to the recent [statement](https://support.discordapp.com/hc/en-us/arti
 2. Unzip it
 3. Navigate into the extracted folder
 4. Edit the `settings.json` and fill in all necessary data (see [Settings](https://github.com/Jisagi/Discord-guild-copy#settings) for more information)
-5. Open the console and run `npm install` (on windows you can shift + right click inside the project folder folder and select 'open command prompt here')
+5. Open the console and run `npm install` (on windows you can shift + right click inside the project folder and select 'open command prompt here')
 6. Run `node copy.js` in the console to print usage
 
 ## Settings
@@ -54,7 +54,7 @@ To get the id of a guild open your client settings -> Appearance and then enable
 
 ## Common Behaviour
 - New guild cleanup
-  - Emoji Creation/Deletion: This will take time, especially if there are lot of them. Expect a few rateLimits when 'debug' is on. If 'copyEmojis' is disabled, emojis on the new server won't be deleted or new ones added.
+  - Emoji Creation/Deletion: This will take time, especially if there are lots of them. Expect a few rateLimits when 'debug' is on. If 'copyEmojis' is disabled, emojis on the new server won't be deleted or new ones added.
   - Bans Creation/Deletion: see 'Emoji Creation/Deletion' above
   - Channel Deletion: The client might still show deleted channels despite them already being deleted. To fix this, just restart your discord client. You can do this while the script is running.
 - Region

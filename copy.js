@@ -9,7 +9,6 @@ const Creator = require('./objects/creator');
 const Logger = require('./objects/logger');
 const settings = require('./settings.json');
 const client = new Discord.Client();
-const version = '1.0.0';
 
 let isBackup = false;
 let isRestore = false;
@@ -26,9 +25,7 @@ client.on('ready', async () => {
     let originalGuildId = settings.originalGuildId;
     let newGuildId = settings.newGuildId;
     let newGuildAdminRoleId = settings.newGuildAdminRoleId;
-    let guildData = {
-        step: 1,
-    };
+    let guildData = { step: 1 };
 
     try {
         // Check discord.js version
@@ -36,8 +33,8 @@ client.on('ready', async () => {
         if (djsVersion !== '12.0.0-dev') throw new Error('Please don\'t install discord.js with \'npm install discord.js\'! Installation instructions are in the README.');
 
         // Check script version
-        let result;
-        result = await VersionControl.checkVersion(version).catch(err => {
+        let { version } = require('./package.json');
+        let result = await VersionControl.checkVersion(version).catch(err => {
             return { error: err || new Error('failed') };
         });
         if (result.error) console.log(`${result.error}\nScript execution will resume.`)

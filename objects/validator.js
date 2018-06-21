@@ -16,8 +16,8 @@ class Validator {
         let data = { changed: false };
 
         if (originalGuildId === newGuildId) throw new Error('New and old guild cannot be the same.');
+        if (!client.guilds.has(newGuildId)) throw new Error('The bot needs to be a member on the new guild.');
         let newGuild = client.guilds.get(newGuildId);
-        if (!newGuild) throw new Error('Please check if the new guild id in the settings is valid.');
         if (!newGuild.available) throw new Error('New guild not available. Please try again later.');
 
         let newGuildAdminRole;

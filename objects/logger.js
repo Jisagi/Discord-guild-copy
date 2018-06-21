@@ -16,7 +16,7 @@ class Logger {
 
     static logError(error) {
         try {
-            console.error(debug ? error.stack : error.message);
+            console.error(debug ? error.stack : error.message || error);
             if (!fs.existsSync(logFolder)) fs.mkdirSync(logFolder);
             fs.appendFileSync(`${logFolder}/errors.log`, `[${getDateString()}] ${error.stack || error.message || error}\n`);
         } catch (err) {
