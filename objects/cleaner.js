@@ -21,19 +21,33 @@ class Cleaner {
 
                 // Delete channel
                 Logger.logMessage(`${guildData.step++}. Deleting channels`);
-                await Promise.all(newGuild.channels.deleteAll());
+                let promises = [];
+                newGuild.channels.forEach(channel => {
+                    promises.push(channel.delete());
+                });
+                await Promise.all(promises);
+                promises = [];
+                
 
                 // Delete roles
                 let filter = role => role.id !== newGuildAdminRoleId && role.id !== newGuild.defaultRole.id;
                 let rolesToDelete = newGuild.roles.filter(filter);
                 Logger.logMessage(`${guildData.step++}. Deleting roles`);
-                await Promise.all(rolesToDelete.deleteAll());
+                rolesToDelete.forEach(role => {
+                    promises.push(role.delete());
+                });
+                await Promise.all(promises);
+                promises = [];
 
                 // Delete emojis
                 if (copyEmojis) {
                     Logger.logMessage(`${guildData.step++}. Deleting emojis`);
-                    await Promise.all(newGuild.emojis.deleteAll());
+                    newGuild.emojis.forEach(emoji => {
+                        promises.push(emoji.delete());
+                    });
                 }
+                await Promise.all(promises);
+                promises = [];
 
                 // Delete Bans
                 if (copyBans) {

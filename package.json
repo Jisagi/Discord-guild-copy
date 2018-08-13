@@ -1,6 +1,6 @@
 {
   "name": "guildcopy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A tool to copy a discord guild",
   "main": "copy.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "Jisagi",
   "license": "GPL-3.0",
   "dependencies": {
-    "discord.js": "git://github.com/hydrabolt/discord.js.git#master"
+    "discord.js": "git://github.com/hydrabolt/discord.js.git#master",
+    "request": "^2.87.0"
   }
 }

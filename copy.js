@@ -34,7 +34,7 @@ client.on('ready', async () => {
 
         // Check script version
         let { version } = require('./package.json');
-        let result = await VersionControl.checkVersion(version).catch(err => {
+        let result = await VersionControl.checkVersion().catch(err => {
             return { error: err || new Error('failed') };
         });
         if (result.error) console.log(`${result.error}\nScript execution will resume.`)
