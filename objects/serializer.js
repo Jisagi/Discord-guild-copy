@@ -118,8 +118,8 @@ class Serializer {
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
-                    allowed: pOver.allowed.bitfield,
-                    denied: pOver.denied.bitfield,
+                    allowed: pOver.allow.bitfield,
+                    denied: pOver.deny.bitfield,
                 };
             });
 
@@ -151,8 +151,8 @@ class Serializer {
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
-                    allowed: pOver.allowed.bitfield,
-                    denied: pOver.denied.bitfield,
+                    allowed: pOver.allow.bitfield,
+                    denied: pOver.deny.bitfield,
                 };
             });
 
@@ -189,8 +189,8 @@ class Serializer {
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
-                    allowed: pOver.allowed.bitfield,
-                    denied: pOver.denied.bitfield,
+                    allowed: pOver.allow.bitfield,
+                    denied: pOver.deny.bitfield,
                 };
             });
 
