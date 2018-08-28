@@ -35,7 +35,7 @@ Selon l'équipe Discord, tout type de compte d'utilisateur, y compris les soi-di
 1. Téléchargez le repository depuis github
 2. Unzipper le
 3. Ouvrez le dossier
-4. Modifiez les paramètres et remplissez toutes les données nécessaires (voir [Paramètres] (https://github.com/Jisagi/Discord-guild-copy#settings) pour plus d'informations).
+4. Modifiez les paramètres et remplissez toutes les données nécessaires (voir [Paramètres](https://github.com/Jisagi/Discord-guild-copy#settings) pour plus d'informations).
 5. Ouvrez la console (SUR CE DOSSIER) et exécutez `npm install` (sur Windows, vous pouvez déplacer + cliquer avec le bouton droit de la souris dans le dossier du projet et sélectionner« Ouvrir l’invite de commande ici »).
 6. Exécutez `node copy.js` dans la console pour imprimer
 
@@ -47,7 +47,7 @@ Pour obtenir l'ID d'une guilde, ouvrez les paramètres Discord -> Apparence, pui
 | originalGuildId | L'identifiant du serveur que vous voulez copier. Peut être laissé vide si un guildData.json existe déjà. |
 | newGuildId | L'identifiant du nouveau serveur sur lequel vous allez copier des données. |
 | newGuildAdminRoleId | L'ID d'un rôle avec des autorisations d'administrateur. Le bot doit avoir ce rôle dans le nouveau serveur (important) ! Vous pouvez créer manuellement un nouveau rôle appelé «guildcopy» et le script l'utilisera automatiquement. Si vous le faites, laissez simplement ce champ vide. (il est recommandé de ne pas toucher à ce paramètre) |
-| copyEmojis | Par défaut: false - Définissez sur true pour copier les émoticônes (voir aussi [Comportement commun] (https://github.com/Jisagi/Discord-guild-copy#common-behaviour)) |
+| copyEmojis | Par défaut: false - Définissez sur true pour copier les émoticônes (voir aussi [Comportement commun](https://github.com/Jisagi/Discord-guild-copy#common-behaviour)) |
 | copyBans | Par défaut: false - Définissez sur true pour maintenir bannis du serveur les utilisateurs. Le bot doit avoir l'autorisation BAN_MEMBERS (Bannir les membres) sur le serveur copié si vous voulez activez cette option ! |
 | debug | Par défaut: false - Définissez sur true pour un résultat général un peu plus poussé et l'affichage d'une erreur si il y en a, par exemple lors de l'apparition d'un problème |
 | token | Votre token de compte. Le bot n'a pas besoin d'autorisations sur le serveur copié (exepction: copyBans = true). |
@@ -67,13 +67,13 @@ Je vais probablement passer à la version stable dès que 12.0 sera stable.
 Jisagi de vérifier les nouveaux commits pour les changements qui pourraient casser quelque chose mais si il en manque un, conatctez-le.
 
 ## Problèmes
-La plupart des problèmes courants sont affichés dans la console lors de l'exécution du script. Si vous rencontrez des pannes ou tout autre comportement étrange non répertorié ici (https://github.com/Jisagi/Discord-guild-copy#common-behaviour), n'hésitez pas à créer un [problème] (https: // github. com / Jisagi / Discord-guild-copy / issues / new). Le script crée des journaux dans le dossier 'logs'. N'hésitez pas à les télécharger sur quelque chose comme [pastebin] (https://pastebin.com/) et ajoutez-les au problème créé pour m'aider à trouver le problème.
+La plupart des problèmes courants sont affichés dans la console lors de l'exécution du script. Si vous rencontrez des pannes ou tout autre comportement étrange non répertorié [ici](https://github.com/Jisagi/Discord-guild-copy#common-behaviour), n'hésitez pas à créer un [problème] (https: // github. com / Jisagi / Discord-guild-copy / issues / new). Le script crée des journaux dans le dossier 'logs'. N'hésitez pas à les télécharger sur quelque chose comme [pastebin](https://pastebin.com/) et ajoutez-les au problème créé pour m'aider à trouver le problème.
 
 ### Puis-je suggérer de nouvelles fonctionnalités (ou me plaindre du code laide)
-Bien sûr, il suffit de créer un [numéro] (https://github.com/Jisagi/Discord-guild-copy/issues/new) ou une [demande de traction] (https://github.com/Jisagi/Discord-guild -copy / compare).
+Bien sûr, il suffit de créer un [numéro](https://github.com/Jisagi/Discord-guild-copy/issues/new) ou une [demande de traction](https://github.com/Jisagi/Discord-guild -copy / compare).
 
 ## Licence
-Ce logiciel est sous licence GPLv3. Pour plus de détails, voir [LICENCE] (https://github.com/Jisagi/Discord-guild-copy/blob/master/LICENSE).
+Ce logiciel est sous licence GPLv3. Pour plus de détails, voir [LICENCE](https://github.com/Jisagi/Discord-guild-copy/blob/master/LICENSE).
 
 ## Credits
 
