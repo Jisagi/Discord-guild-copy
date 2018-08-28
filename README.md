@@ -3,6 +3,8 @@
 ## Information
 Did you ever want to create a copy of a guild? Now you can! There is no need to manually create roles, channels and permissions, which can take very long depending on the original guilds size. The script does everything for you. It backs up a guild into a single file and lets you create a new guild from it. You can share your file with others, too.
 
+The following guide is also available in [french](https://github.com/Jisagi/Discord-guild-copy/blob/master/README.fr.md) thanks to TheLightSpirit.
+
 ### What will be copied
 - Categories
 - Text & Voice channels
@@ -74,3 +76,8 @@ Of course, just create an [issue](https://github.com/Jisagi/Discord-guild-copy/i
 
 ## License
 This software is licensed under the terms of the GPLv3. For more details see [LICENSE](https://github.com/Jisagi/Discord-guild-copy/blob/master/LICENSE).
+
+## Credits
+- [EmberVulpix](https://github.com/EmberVulpix) for the command line arguments
+- [TheLightSpirit](https://github.com/TheLightSpirit) for the french README translation
+- Everybody who helps adding new features and finding bugs!
