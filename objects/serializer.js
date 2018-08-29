@@ -148,6 +148,7 @@ class Serializer {
         textChannelCollection = textChannelCollection.sort((a, b) => a.rawPosition - b.rawPosition);
         let textChannel = textChannelCollection.map(tCh => {
             let permOverwritesCollection = tCh.permissionOverwrites.filter(pOver => pOver.type === 'role');
+            permOverwritesCollection = permOverwritesCollection.filter(pOver => guildToCopy.roles.has(pOver.id)); // fix for a very rare bug
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
