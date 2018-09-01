@@ -1,4 +1,4 @@
-const { copyEmojis, copyBans, debug } = require('../settings.json');
+const { copyEmojis, copyBans, output, debug } = require('../settings.json');
 const { Permissions, Collection } = require('discord.js');
 const { validateBitrate, validateUserLimit } = require('./functions');
 const Logger = require('./logger');
@@ -11,57 +11,57 @@ class Creator {
      * @param {Object} guildData Serialized guild data
      * @param {string} newGuildId New guild id
      * @param {string} newGuildAdminRoleId New guild Administrator role id
+     * @param {Object} translator Translator object
      * @returns {Object} Promise which resolves when finished
      */
-    static setData(client, guildData, newGuildId, newGuildAdminRoleId) {
+    static setData(client, guildData, newGuildId, newGuildAdminRoleId, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let newGuild = client.guilds.get(newGuildId);
                 guildData.references = {};
 
                 // General
-                Logger.logMessage(`${guildData.step++}. Setting general data`);
+                Logger.logMessage(translator.disp('messageCreatorGeneralData', [guildData.step++]));
                 await this.setGeneralData(guildData, newGuild);
 
                 // Roles
                 if (guildData.roles.length) {
-                    Logger.logMessage(`${guildData.step++}. Creating roles`);
-                    guildData.references.roles = await this.createRoles(guildData, newGuild);
+                    Logger.logMessage(translator.disp('messageCreatorRoleData', [guildData.step++]));
+                    guildData.references.roles = await this.createRoles(guildData, newGuild, translator);
                 }
 
                 // Categories
                 if (guildData.categories.length) {
-                    Logger.logMessage(`${guildData.step++}. Creating categories`);
-                    guildData.references.categories = await this.createCategories(guildData, newGuild);
+                    Logger.logMessage(translator.disp('messageCreatorCategoryData', [guildData.step++]));
+                    guildData.references.categories = await this.createCategories(guildData, newGuild, translator);
                 }
 
                 // Text channel
                 if (guildData.textChannel.length) {
-                    Logger.logMessage(`${guildData.step++}. Creating text channels`);
-                    await this.createTextChannel(guildData, newGuild);
+                    Logger.logMessage(translator.disp('messageCreatorTextData', [guildData.step++]));
+                    await this.createTextChannel(guildData, newGuild, translator);
                 }
 
                 // Voice channel
                 if (guildData.voiceChannel.length) {
-                    Logger.logMessage(`${guildData.step++}. Creating voice channels`);
-                    await this.createVoiceChannel(guildData, newGuild);
+                    Logger.logMessage(translator.disp('messageCreatorVoiceData', [guildData.step++]));
+                    await this.createVoiceChannel(guildData, newGuild, translator);
                 }
 
                 // Emojis
                 if (copyEmojis && guildData.emojis.length) {
-                    Logger.logMessage(`${guildData.step++}. Creating emojis`);
-                    await this.createEmojis(guildData, newGuild);
+                    Logger.logMessage(translator.disp('messageCreatorEmojiData', [guildData.step++]));
+                    await this.createEmojis(guildData, newGuild, translator);
                 }
 
                 // Bans
                 if (copyBans && guildData.bans.length) {
-                    Logger.logMessage(`${guildData.step++}. Banning users`);
-                    guildData = await this.createBans(guildData, newGuild);
+                    Logger.logMessage(translator.disp('messageCreatorBanData', [guildData.step++]));
+                    guildData = await this.createBans(guildData, newGuild, translator);
                 }
 
                 // Finalize
-                guildData = await this.finalize(client, newGuildId, newGuildAdminRoleId, guildData);
-                Logger.logMessage(`${guildData.step++}. Done!`);
+                if (output === 'all') guildData = await this.finalize(client, newGuildId, newGuildAdminRoleId, guildData, translator);
 
                 return resolve();
             } catch (err) {
@@ -77,6 +77,7 @@ class Creator {
      * System channel: same as AFK Channel/Timeout
      * @param {Object} guildData Serialized guild data
      * @param {Guild} newGuild New guild
+     * @param {Object} translator Translator object
      * @returns {Object} Promise which resolves when finished
      */
     static setGeneralData(guildData, newGuild) {
@@ -106,9 +107,10 @@ class Creator {
      * @everyone role permissions will be overwritten.
      * @param {Object} guildData Serialized guild data
      * @param {Guild} newGuild New guild
+     * @param {Object} translator Translator object
      * @returns {Object} Promise which resolves into roleReferences
      */
-    static createRoles(guildData, newGuild) {
+    static createRoles(guildData, newGuild, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
@@ -133,7 +135,7 @@ class Creator {
                         };
 
                         let promise = newGuild.roles.create(newRole).then(createdRole => {
-                            if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created role "${createdRole.name}"`);
+                            if (debug) Logger.logMessage(translator.disp('messageCreatorRoleDataDebug', [guildData.step - 1, counter++, createdRole.name]));
                             roleReferences.set(role.idOld, { new: createdRole, old: role });
                         });
                         promises.push(promise);
@@ -153,9 +155,10 @@ class Creator {
      * Category creation.
      * @param {Object} guildData Serialized guild data
      * @param {guild} newGuild New guild
+     * @param {Object} translator Translator object
      * @returns {Object} Promise which resolves into categoryReferences
      */
-    static createCategories(guildData, newGuild) {
+    static createCategories(guildData, newGuild, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
@@ -175,7 +178,7 @@ class Creator {
                     };
 
                     let promise = newGuild.channels.create(category.name, options).then(createdCategory => {
-                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created catergory "${createdCategory.name}"`);
+                        if (debug) Logger.logMessage(translator.disp('messageCreatorCategoryDataDebug', [guildData.step - 1, counter++, createdCategory.name]));
                         categoryReferences.set(category.idOld, { new: createdCategory, old: category });
                     });
                     promises.push(promise);
@@ -195,10 +198,10 @@ class Creator {
      * Topic and systemChannel are set after creation.
      * @param {Object} guildData Serialized guild data
      * @param {Guild} newGuild New guild
-     * @param {Client} client Discord Client
+     * @param {Object} translator Translator object
      * @returns {Object} Promise which resolves when finished
      */
-    static createTextChannel(guildData, newGuild) {
+    static createTextChannel(guildData, newGuild, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
@@ -226,7 +229,7 @@ class Creator {
                     let promise = newGuild.channels.create(textChannel.name, options).then(createdChannel => {
                         if (textChannel.isSystemChannel) newSystemChannel = createdChannel.id;
                         if (textChannel.topic) channelWithTopics.set(createdChannel.id, { newCh: createdChannel, topic: textChannel.topic });
-                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created text channel "${createdChannel.name}"`);
+                        if (debug) Logger.logMessage(translator.disp('messageCreatorTextDataDebug', [guildData.step - 1, counter++, createdChannel.name]));
                     });
                     promises.push(promise);
                 });
@@ -249,10 +252,10 @@ class Creator {
      * AFK Channel/Timeout are set after creation.
      * @param {Object} guildData Serialized guild data
      * @param {Guild} newGuild New guild
-     * @param {Client} client Discord Client
+     * @param {Object} translator Translator object
      * @returns {Object} Promise which resolves when finished
      */
-    static createVoiceChannel(guildData, newGuild) {
+    static createVoiceChannel(guildData, newGuild, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
@@ -279,7 +282,7 @@ class Creator {
 
                     let promise = newGuild.channels.create(voiceChannel.name, options).then(createdChannel => {
                         if (voiceChannel.isAfkChannel) newAfkChannel = createdChannel.id;
-                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created voice channel "${createdChannel.name}"`);
+                        if (debug) Logger.logMessage(translator.disp('messageCreatorVoiceDataDebug', [guildData.step - 1, counter++, createdChannel.name]));
                     });
                     promises.push(promise);
                 });
@@ -300,16 +303,17 @@ class Creator {
      * Only executed if enabled in the settings.
      * @param {Object} guildData Serialized guild data
      * @param {Guild} newGuild New guild
+     * @param {Object} translator Translator object
      * @returns {Object} Promise which resolves when finished
      */
-    static createEmojis(guildData, newGuild) {
+    static createEmojis(guildData, newGuild, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
                 let promises = [];
                 guildData.emojis.forEach(emoji => {
                     let promise = newGuild.emojis.create(emoji.url, emoji.name).then(createdEmoji => {
-                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Created emoji: ${createdEmoji.name}`);
+                        if (debug) Logger.logMessage(translator.disp('messageCreatorEmojiDataDebug', [guildData.step - 1, counter++, createdEmoji.name]));
                     });
                     promises.push(promise);
                 });
@@ -328,9 +332,10 @@ class Creator {
      * Only executed if enabled in the settings.
      * @param {Object} guildData Serialized guild data
      * @param {Guild} newGuild New guild
+     * @param {Object} translator Translator object
      * @returns {Object} Promise which resolves when finished
      */
-    static createBans(guildData, newGuild) {
+    static createBans(guildData, newGuild, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
@@ -338,14 +343,14 @@ class Creator {
                 guildData.bans.forEach(ban => {
                     let promise = newGuild.members.ban(ban.userId, { reason: ban.reason }).then(newBan => {
                         let username = newBan.user ? newBan.user.tag : newBan.tag || newBan;
-                        if (debug) Logger.logMessage(`${guildData.step - 1}.${counter++} Banned user ${username}`);
+                        if (debug) Logger.logMessage(translator.disp('messageCreatorBanDataDebug', [guildData.step - 1, counter++, username]));
                     });
                     promises.push(promise);
                 });
 
                 await Promise.all(promises);
 
-                return resolve();
+                return resolve(guildData);
             } catch (err) {
                 return reject(err);
             }
@@ -360,17 +365,16 @@ class Creator {
      * @param {string} newGuildId New guild id
      * @param {string} newGuildAdminRoleId New guild Administrator role id
      * @param {Object} guildData Serialized guild data
+     * @param {Object} translator Translator object
      * @returns {Object} Promise which resolves into guildData
      */
-    static finalize(client, newGuildId, newGuildAdminRoleId, guildData) {
+    static finalize(client, newGuildId, newGuildAdminRoleId, guildData, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let newGuild = client.guilds.get(newGuildId);
                 let deleteableAdminRole = newGuild.roles.get(newGuildAdminRoleId);
                 let textChs = newGuild.channels.filter(c => c.type === 'text');
-
-                let outText = `Guild copy finished!\n` +
-                    `The last thing to do is to delete the \`${deleteableAdminRole.name}\` role.`;
+                let outText = translator.disp('messageGuildCopyFinished', [deleteableAdminRole.name]);
                 if (textChs.size > 0) await textChs.first().send(`@everyone ${outText}`);
                 else Logger.logMessage(`${guildData.step++}. ${outText}`);
 

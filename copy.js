@@ -7,20 +7,33 @@ const Serializer = require('./objects/serializer');
 const Cleaner = require('./objects/cleaner');
 const Creator = require('./objects/creator');
 const Logger = require('./objects/logger');
+const Translator = require('./objects/translator');
 const settings = require('./settings.json');
 const client = new Discord.Client();
 
 let isBackup = false;
 let isRestore = false;
-let isClone = false;
 let backupFile = 'guildData.json';
 
 client.on('ready', async () => {
-    if (!client.user.bot) {
-        Logger.logError('Specified user token is not a bot user token.');
+    await Translator.loadTranslations().catch(langError => {
+        console.error(langError);
+        return process.exit(1);
+    });
+
+    if (!['all', 'error', 'none'].includes(settings.output)) {
+        console.error(Translator.disp('errorOutputParameter'));
         return process.exit(1);
     }
-    Logger.logMessage(`Successfully logged in as ${client.user.tag}. Starting script.`);
+
+    let lang = Translator.getLanguage();
+    Logger.logMessage(Translator.disp('messageLanguageAuthor', [lang['language'], lang['author']]));
+
+    if (!client.user.bot) {
+        Logger.logError(Translator.disp('errorUserToken'));
+        return process.exit(1);
+    }
+    Logger.logMessage(Translator.disp('messsageLogin', [client.user.tag]));
 
     let originalGuildId = settings.originalGuildId;
     let newGuildId = settings.newGuildId;
@@ -30,67 +43,65 @@ client.on('ready', async () => {
     try {
         // Check discord.js version
         let djsVersion = require('./node_modules/discord.js/package.json').version;
-        if (djsVersion !== '12.0.0-dev') throw new Error('Please don\'t install discord.js with \'npm install discord.js\'! Installation instructions are in the README.');
+        if (djsVersion !== '12.0.0-dev') throw new Error(Translator.disp('errorNPM'));
 
         // Check script version
         let { version } = require('./package.json');
-        let result = await VersionControl.checkVersion().catch(err => {
-            return { error: err || new Error('failed') };
+        let result = await VersionControl.checkVersion(Translator).catch(err => {
+            return { error: err || new Error(Translator.disp('errorUnspecified')) };
         });
-        if (result.error) console.log(`${result.error}\nScript execution will resume.`)
-        else if (version !== result.version) throw new Error(`You are not using the latest script version. Please redownload the repository.`
-            + `\nYour version: ${version}\nLatest version: ${result.version}`);
-        if (!result.error) console.log('Latest script version installed');
+        if (result.error) Logger.logMessage(Translator.disp('errorVersionCheckOther', [result.error]))
+        else if (version !== result.version) throw new Error(Translator.disp('errorVersionCheckOutdated', [version, result.version]));
+        if (!result.error) Logger.logMessage(Translator.disp('messageVersionCheckSuccess'));
 
         // Settings Validation only on restore or clone
         let data = { changed: false };
-        if (!isBackup) data = Validator.validateSettings(client, originalGuildId, newGuildId, newGuildAdminRoleId);
+        if (!isBackup) data = Validator.validateSettings(client, originalGuildId, newGuildId, newGuildAdminRoleId, Translator);
         if (data.changed) newGuildAdminRoleId = data.newGuildAdminRoleId;
 
         // Load/Create serialized guildData
         if (fs.existsSync(backupFile) && isRestore) {
             guildData = require(`./${backupFile}`);
             guildData.step = 1;
-            Logger.logMessage(`${guildData.step++}. Serialized data was found and will be used.`);
+            Logger.logMessage(Translator.disp('messageSerialized', [guildData.step++]));
         } else if (isRestore) {
-            throw new Error(`Specified restore but guild backup '${backupFile}' doesn't exist.`);
+            throw new Error(Translator.disp('errorRestoreNotExistent', [backupFile]));
         } else {
             if (!client.guilds.has(originalGuildId)) {
-                throw new Error('Original guild to copy does not exist. Please check if the id in the ' +
-                    'settings is correct and if the bot is also member of this guild.');
+                throw new Error(Translator.disp('errorSerializationOriginalNotExistent'));
             }
             let banCollection = new Discord.Collection();
             try {
                 if (settings.copyBans) banCollection = await client.guilds.get(originalGuildId).fetchBans();
             } catch (banError) {
-                throw new Error('You tried to copy bans without giving the bot the BAN_MEMBERS permissions on the original guild.');
+                throw new Error(Translator.disp('errorSerializationNoBanPermissions'));
             }
-            guildData = Serializer.serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile);
+            guildData = Serializer.serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile, Translator);
         }
 
         // Stop on backup only
         if (isBackup) {
-            Logger.logMessage(`${guildData.step}. Program execution finished because backup was specified.`);
+            Logger.logMessage(Translator.disp('messageBackupDone', [guildData.step]));
             await client.destroy();
-            return process.exit();
+            return process.exit(0);
         }
 
         // Cleanup new guild
-        guildData = await Cleaner.cleanNewGuild(client, newGuildId, newGuildAdminRoleId, guildData);
+        guildData = await Cleaner.cleanNewGuild(client, newGuildId, newGuildAdminRoleId, guildData, Translator);
 
         // Create new guild
-        await Creator.setData(client, guildData, newGuildId, newGuildAdminRoleId);
+        await Creator.setData(client, guildData, newGuildId, newGuildAdminRoleId, Translator);
     } catch (err) {
         Logger.logError(err);
     }
 
     await client.destroy();
-    return process.exit();
+    return process.exit(0);
 });
 
 client.on('rateLimit', rateLimitObj => {
     if (settings.debug) {
-        Logger.logMessage(`Rate limit reached!\nTimeout: ${rateLimitObj.timeout}\nLimit: ${rateLimitObj.limit}\n` +
+        Logger.logError(`Rate limit reached!\nTimeout: ${rateLimitObj.timeout}\nLimit: ${rateLimitObj.limit}\n` +
             `TimeDiff: ${rateLimitObj.timeDifference}\nMethod: ${rateLimitObj.method}\nPath: ${rateLimitObj.path}\n` +
             `Route: ${rateLimitObj.route}`);
     }
@@ -119,7 +130,6 @@ function main() {
     }
     isBackup = args[0] === 'backup';
     isRestore = args[0] === 'restore';
-    isClone = args[0] === 'clone';
     client.login(settings.token);
 }
 

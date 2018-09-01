@@ -69,8 +69,8 @@ Jisagi de vérifier les nouveaux commits pour les changements qui pourraient cas
 ## Problèmes
 La plupart des problèmes courants sont affichés dans la console lors de l'exécution du script. Si vous rencontrez des pannes ou tout autre comportement étrange non répertorié [ici](https://github.com/Jisagi/Discord-guild-copy#common-behaviour), n'hésitez pas à créer un [problème] (https: // github. com / Jisagi / Discord-guild-copy / issues / new). Le script crée des journaux dans le dossier 'logs'. N'hésitez pas à les télécharger sur quelque chose comme [pastebin](https://pastebin.com/) et ajoutez-les au problème créé pour m'aider à trouver le problème.
 
-### Puis-je suggérer de nouvelles fonctionnalités (ou me plaindre du code laide)
-Bien sûr, il suffit de créer un [numéro](https://github.com/Jisagi/Discord-guild-copy/issues/new) ou une [demande de traction](https://github.com/Jisagi/Discord-guild -copy / compare).
+## Puis-je suggérer de nouvelles fonctionnalités (ou me plaindre du code laide)
+Bien sûr, il suffit de créer un [numéro](https://github.com/Jisagi/Discord-guild-copy/issues/new) ou une [demande de traction](https://github.com/Jisagi/Discord-guild-copy/compare).
 
 ## Licence
 Ce logiciel est sous licence GPLv3. Pour plus de détails, voir [LICENCE](https://github.com/Jisagi/Discord-guild-copy/blob/master/LICENSE).

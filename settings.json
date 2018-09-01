@@ -4,6 +4,8 @@
     "newGuildAdminRoleId": "",
     "copyEmojis": false,
     "copyBans": false,
+    "language": "en",
+    "output": "all",
     "debug": false,
     "token": ""
 }

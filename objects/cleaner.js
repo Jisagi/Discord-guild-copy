@@ -12,27 +12,28 @@ class Cleaner {
      * @param {string} newGuildId New guild id
      * @param {string} newGuildAdminRoleId New guild Administrator role id
      * @param {Object} guildData Serialized guild data
+     * @param {Object} translator Translator object
      * @returns {Object} guildData
      */
-    static cleanNewGuild(client, newGuildId, newGuildAdminRoleId, guildData) {
+    static cleanNewGuild(client, newGuildId, newGuildAdminRoleId, guildData, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let newGuild = client.guilds.get(newGuildId);
 
                 // Delete channel
-                Logger.logMessage(`${guildData.step++}. Deleting channels`);
+                Logger.logMessage(translator.disp('messageCleanerChannels', [guildData.step++]));
                 let promises = [];
                 newGuild.channels.forEach(channel => {
                     promises.push(channel.delete());
                 });
                 await Promise.all(promises);
                 promises = [];
-                
+
 
                 // Delete roles
                 let filter = role => role.id !== newGuildAdminRoleId && role.id !== newGuild.defaultRole.id;
                 let rolesToDelete = newGuild.roles.filter(filter);
-                Logger.logMessage(`${guildData.step++}. Deleting roles`);
+                Logger.logMessage(translator.disp('messageCleanerRoles', [guildData.step++]));
                 rolesToDelete.forEach(role => {
                     promises.push(role.delete());
                 });
@@ -41,7 +42,7 @@ class Cleaner {
 
                 // Delete emojis
                 if (copyEmojis) {
-                    Logger.logMessage(`${guildData.step++}. Deleting emojis`);
+                    Logger.logMessage(translator.disp('messageCleanerEmojis', [guildData.step++]));
                     newGuild.emojis.forEach(emoji => {
                         promises.push(emoji.delete());
                     });
@@ -51,14 +52,14 @@ class Cleaner {
 
                 // Delete Bans
                 if (copyBans) {
-                    Logger.logMessage(`${guildData.step++}. Lifting bans`);
+                    Logger.logMessage(translator.disp('messageCleanerBans', [guildData.step++]));
                     let bans = await newGuild.fetchBans();
                     let unbans = [];
                     bans.forEach(ban => unbans.push(newGuild.members.unban(ban.user.id)));
                     await Promise.all(unbans);
                 }
 
-                Logger.logMessage(`${guildData.step++}. New guild cleanup finished`);
+                Logger.logMessage(translator.disp('messageCleanerFinished', [guildData.step++]));
                 return resolve(guildData);
             } catch (err) {
                 return reject(err);

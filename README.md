@@ -51,6 +51,8 @@ To get the id of a guild open your client settings -> Appearance and then enable
 | newGuildAdminRoleId | The id of a role with administrator permissions. The bot needs to have this role on the new guild! You can manually create a new role called 'guildcopy' and the script will automatically use it. If you do so, just leave this field empty. |
 | copyEmojis | default: false - set to true to copy emojis (see also [Common Behaviour](https://github.com/Jisagi/Discord-guild-copy#common-behaviour)) |
 | copyBans | default: false - set to true to copy banned users The bot needs to have the BAN_MEMBERS permission on the original guild if you enable this! |
+| language | default: en - set this to any supported language from the `translations` folder |
+| output | default: all - Possible values: `all` for everything, `error` for errors only, `none` for no output at all |
 | debug | default: false - set to true for a more detailed general and error output e.g. when creating an issue |
 | token | Your account token. The bot does not need any permissions on the original guild (only exception: copyBans=true). |
 
@@ -71,8 +73,11 @@ I try to check new commits for changes which might break something but if I miss
 ## Issues
 Most of the common issues are displayed in the console while running the script. If you encounter crashes or any other weird behaviour not listed [here](https://github.com/Jisagi/Discord-guild-copy#common-behaviour) feel free to create an [issue](https://github.com/Jisagi/Discord-guild-copy/issues/new). The script creates logs in the 'logs' folder. Feel free to upload those to something like [pastebin](https://pastebin.com/) and add them to the created issue to help me find the problem.
 
-### Can I suggest new features (or complain about ugly code)
+## Can I suggest new features (or complain about ugly code)
 Of course, just create an [issue](https://github.com/Jisagi/Discord-guild-copy/issues/new) or a [pull request](https://github.com/Jisagi/Discord-guild-copy/compare).
+
+## Translation Guide
+If you want to help translate the script, feel free do so so. Just create a copy of the `en.json` in the `translation` folder and create a pull request with the new transation. All `[@@X@@]` statements are dynamic parts of a sentence and need to be in the correct spot for each language numbered with 1,2,3,... Please test your translation at least once before submitting it and don't forget to change the langcode/language/author at the top of the file.
 
 ## License
 This software is licensed under the terms of the GPLv3. For more details see [LICENSE](https://github.com/Jisagi/Discord-guild-copy/blob/master/LICENSE).

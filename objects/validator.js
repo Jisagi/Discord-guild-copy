@@ -10,15 +10,16 @@ class Validator {
      * @param {string} originalGuildId Original guild id
      * @param {string} newGuildId New guild id
      * @param {string} newGuildAdminRoleId New guild Administrator role id
+     * @param {Object} translator Translator object
      * @returns {Object} Settings data
      */
-    static validateSettings(client, originalGuildId, newGuildId, newGuildAdminRoleId) {
+    static validateSettings(client, originalGuildId, newGuildId, newGuildAdminRoleId, translator) {
         let data = { changed: false };
 
-        if (originalGuildId === newGuildId) throw new Error('New and old guild cannot be the same.');
-        if (!client.guilds.has(newGuildId)) throw new Error('The bot needs to be a member on the new guild.');
+        if (originalGuildId === newGuildId) throw new Error(translator.disp('errorValidationIdenticalGuilds'));
+        if (!client.guilds.has(newGuildId)) throw new Error(translator.disp('errorValidationNotMember'));
         let newGuild = client.guilds.get(newGuildId);
-        if (!newGuild.available) throw new Error('New guild not available. Please try again later.');
+        if (!newGuild.available) throw new Error(translator.disp('errorValidationAvailability'));
 
         let newGuildAdminRole;
         if (newGuild.roles.has(newGuildAdminRoleId)) {
@@ -31,11 +32,11 @@ class Validator {
             }
         }
 
-        if (!newGuildAdminRole) throw new Error('New guild admin role id doesn\'t exist.');
-        if (!newGuildAdminRole.permissions.has('ADMINISTRATOR')) throw new Error('New guild admin role doesn\'t have administrator permissions.');
+        if (!newGuildAdminRole) throw new Error(translator.disp('errorValidationAdminRoleExists'));
+        if (!newGuildAdminRole.permissions.has('ADMINISTRATOR')) throw new Error(translator.disp('errorValidationAdminRolePersmissions'));
         let highestRole = newGuild.roles.reduce((prev, role) => role.comparePositionTo(prev) > 0 ? role : prev, newGuild.roles.first());
-        if (newGuildAdminRole.id !== highestRole.id) throw new Error('The guildcopy role has to be the highest role on the target guild.');
-        if (!newGuild.me.roles.has(newGuildAdminRole.id)) throw new Error('Please assign the guildcopy role to the bot.');
+        if (newGuildAdminRole.id !== highestRole.id) throw new Error(translator.disp('errorValidationAdminRolePosition'));
+        if (!newGuild.me.roles.has(newGuildAdminRole.id)) throw new Error(translator.disp('errorValidationAdminRoleNotAssigned'));
 
         return data;
     }

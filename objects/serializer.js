@@ -10,51 +10,52 @@ class Serializer {
      * @param {Collection} banCollection Banned users
      * @param {Object} guildData Serialized guild data
      * @param {string} backupFile Backup JSON file name
+     * @param {Object} translator Translator object
      * @returns {Object} guildData
      */
-    static serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile) {
+    static serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile, translator) {
         // Check
         let guildToCopy = client.guilds.get(originalGuildId);
-        if (!guildToCopy.available) throw new Error('Original guild not available. Please try again later.');
+        if (!guildToCopy.available) throw new Error(translator.disp('errorSerializerGuildUnavailable'));
 
         // General
-        Logger.logMessage(`${guildData.step++}. Serializing general data`);
+        Logger.logMessage(translator.disp('messageSerializerGeneralData', [guildData.step++]));
         guildData.general = this.getGeneralData(guildToCopy);
 
         // Roles
-        Logger.logMessage(`${guildData.step++}. Serializing role data`);
+        Logger.logMessage(translator.disp('messageSerializerRoleData', [guildData.step++]));
         guildData.roles = guildData.roles = this.serializeRoles(guildToCopy);
-        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.roles.length} role(s)`);
+        if (debug) Logger.logMessage(translator.disp('messageSerializerRoleDataDebug', [guildData.step - 1, guildData.roles.length]));
 
         // Categories
-        Logger.logMessage(`${guildData.step++}. Serializing category data`);
+        Logger.logMessage(translator.disp('messageSerializerCategoryData', [guildData.step++]));
         guildData.categories = this.serializeCategories(guildToCopy);
-        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.categories.length} category(ies)`);
+        if (debug) Logger.logMessage(translator.disp('messageSerializerCategoryDataDebug', [guildData.step - 1, guildData.categories.length]));
 
         // Text channel
-        Logger.logMessage(`${guildData.step++}. Serializing text channel data`);
+        Logger.logMessage(translator.disp('messageSerializerTextData', [guildData.step++]));
         guildData.textChannel = this.serializeTextChannels(guildToCopy);
-        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.textChannel.length} text channel(s)`);
+        if (debug) Logger.logMessage(translator.disp('messageSerializerTextDataDebug', [guildData.step - 1, guildData.textChannel.length]));
 
         // Voice channel
-        Logger.logMessage(`${guildData.step++}. Serializing voice channel data`);
+        Logger.logMessage(translator.disp('messageSerializerVoiceData', [guildData.step++]));
         guildData.voiceChannel = this.serializeVoiceChannels(guildToCopy);
-        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.voiceChannel.length} voice channel(s)`);
+        if (debug) Logger.logMessage(translator.disp('messageSerializerVoiceDataDebug', [guildData.step - 1, guildData.voiceChannel.length]));
 
         // Emojis
-        Logger.logMessage(`${guildData.step++}. Serializing emojis`);
+        Logger.logMessage(translator.disp('messageSerializerEmojiData', [guildData.step++]));
         guildData.emojis = this.serializeEmojis(guildToCopy);
-        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.emojis.length} emoji(s)`);
+        if (debug) Logger.logMessage(translator.disp('messageSerializerEmojiDataDebug', [guildData.step - 1, guildData.emojis.length]));
 
         // Bans
-        Logger.logMessage(`${guildData.step++}. Serializing bans`);
+        Logger.logMessage(translator.disp('messageSerializerBanData', [guildData.step++]));
         guildData.bans = this.serializeBans(banCollection);
-        if (debug) Logger.logMessage(`${guildData.step - 1}.1 Serialized ${guildData.bans.length} ban(s)`);
+        if (debug) Logger.logMessage(translator.disp('messageSerializerBanDataDebug', [guildData.step - 1, guildData.bans.length]));
 
         // Save data to file
-        Logger.logMessage(`${guildData.step++}. Saving guild data to file`);
+        Logger.logMessage(translator.disp('messageSerializerSave', [guildData.step++]));
         fs.writeFileSync(backupFile, JSON.stringify(guildData));
-        Logger.logMessage(`${guildData.step++}. Serialization finished and data saved`);
+        Logger.logMessage(translator.disp('messageSerializerSaveFinished', [guildData.step++]));
 
         return guildData;
     }
