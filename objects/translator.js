@@ -28,7 +28,7 @@ function loadTranslationFile(filename) {
     try {
         let data = fs.readFileSync(path.join('translations/', filename));
         return JSON.parse(data);
-    } catch {
+    } catch (err) {
         return null;
     }
 };
