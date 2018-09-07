@@ -7,4 +7,6 @@ jobs:
   include:
     - stage: test
       script: 
+      - rm -r settings.json
+      - wget $link
       - node copy.js clone
