@@ -1,0 +1,10 @@
+sudo: false
+dist: trusty
+language: bash
+jobs:
+  include:
+    - stage: test
+      script: 
+      - npm install
+      - npm install discord.js
+      - node copy.js
