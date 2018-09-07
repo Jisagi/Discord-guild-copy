@@ -1,6 +1,8 @@
 sudo: false
 dist: trusty
-language: bash
+language: node_js
+node_js:
+  - "10"
 jobs:
   include:
     - stage: test
