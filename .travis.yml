@@ -7,6 +7,4 @@ jobs:
   include:
     - stage: test
       script: 
-      - npm install
-      - npm install discord.js
-      - node copy.js
+      - node copy.js clone
