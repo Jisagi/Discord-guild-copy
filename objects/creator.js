@@ -174,7 +174,7 @@ class Creator {
                     });
                     let options = {
                         type: 'category',
-                        overwrites: overwrites,
+                        permissionOverwrites: overwrites,
                     };
 
                     let promise = newGuild.channels.create(category.name, options).then(createdCategory => {
@@ -217,7 +217,7 @@ class Creator {
                         options.parent = guildData.references.categories.get(textChannel.parentCat).new.id;
                     }
                     if (!textChannel.permLocked) {
-                        options.overwrites = textChannel.permOverwrites.map(permOver => {
+                        options.permissionOverwrites = textChannel.permOverwrites.map(permOver => {
                             return {
                                 id: guildData.references.roles.get(permOver.id).new.id,
                                 allow: new Permissions(permOver.allowed),
@@ -271,7 +271,7 @@ class Creator {
                         options.parent = guildData.references.categories.get(voiceChannel.parentCat).new.id;
                     }
                     if (!voiceChannel.permLocked) {
-                        options.overwrites = voiceChannel.permOverwrites.map(permOver => {
+                        options.permissionOverwrites = voiceChannel.permOverwrites.map(permOver => {
                             return {
                                 id: guildData.references.roles.get(permOver.id).new.id,
                                 allow: new Permissions(permOver.allowed),
