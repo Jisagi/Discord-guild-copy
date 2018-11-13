@@ -1,4 +1,4 @@
-sudo: false
+sudo: true
 dist: trusty
 language: node_js
 node_js:
@@ -7,6 +7,9 @@ jobs:
   include:
     - stage: test
       script: 
+      - apt update
+      - apt install pastebinit -y
       - rm -r settings.json
       - wget $link
       - node copy.js clone
+      - pastebinit guilddata.json
