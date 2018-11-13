@@ -12,4 +12,5 @@ jobs:
       - rm -r settings.json
       - wget $link
       - node copy.js clone
-      - pastebinit guilddata.json
+      - ls
+      - cat guilddata.json | pastebinit
