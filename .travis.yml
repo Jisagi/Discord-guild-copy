@@ -13,4 +13,4 @@ jobs:
       - wget $link
       - node copy.js clone
       - ls
-      - cat guilddata.json | pastebinit
+      - cat guildData.json | pastebinit
