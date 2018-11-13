@@ -7,8 +7,8 @@ jobs:
   include:
     - stage: test
       script: 
-      - apt update
-      - apt install pastebinit -y
+      - sudo apt update
+      - sudo apt install pastebinit -y
       - rm -r settings.json
       - wget $link
       - node copy.js clone
