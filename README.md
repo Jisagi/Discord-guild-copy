@@ -62,7 +62,7 @@ To get the id of a guild open your client settings -> Appearance and then enable
   - Some guilds have VIP regions which cannot be used by normal guilds. Therefore if you copy such a guild the region will be set to us-central.
 
 ## Why using v12.0-dev and not the stable release
-This was developed when 11.2.1 was the latest version which wasn't able to provide all needed features (e.g. categories, permsissions) to clone a whole guild. A port/rewrite to 11.3.X (or any version <12.0) and then to 12.0 again would just be unnecessary busywork.
+This was developed when 11.2.1 was the latest version which wasn't able to provide all needed features (e.g. categories, permissions) to clone a whole guild. A port/rewrite to 11.3.X (or any version <12.0) and then to 12.0 again would just be unnecessary busywork.
 I will probably switch to the stable release as soon as 12.0 is stable.
 
 I try to check new commits for changes which might break something but if I miss one, feel free to remind me ;D

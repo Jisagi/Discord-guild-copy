@@ -34,7 +34,7 @@ class VersionControl {
         return new Promise((resolve, reject) => {
             let opt = {
                 url: link,
-                //headers: { 'User-Agent': 'request' },
+                headers: { 'User-Agent': 'request' },
             };
             request(opt, (err, res, body) => {
                 if (err) return reject(err);
