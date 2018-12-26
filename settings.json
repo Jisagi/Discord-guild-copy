@@ -6,6 +6,7 @@
     "copyBans": false,
     "language": "en",
     "output": "all",
+    "djsVersionCheck": true,
     "debug": false,
     "token": ""
 }

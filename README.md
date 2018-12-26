@@ -3,8 +3,6 @@
 ## Information
 Did you ever want to create a copy of a guild? Now you can! There is no need to manually create roles, channels and permissions, which can take very long depending on the original guilds size. The script does everything for you. It backs up a guild into a single file and lets you create a new guild from it. You can share your file with others, too.
 
-The following guide is also available in [french](https://github.com/Jisagi/Discord-guild-copy/blob/master/README.fr.md) thanks to TheLightSpirit.
-
 ### What will be copied
 - Categories
 - Text & Voice channels
@@ -29,9 +27,7 @@ The following guide is also available in [french](https://github.com/Jisagi/Disc
 - A preferably empty guild which can be overwritten
 
 ## Disclaimer
-**_Use this script at your own risk!_**
-
-According to the recent [statement](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots000000) of the discord team, any kind of user accounts including so called SelfBots are forbidden. The script must be run with a bot user token.
+**The script must be run with a bot user token.** According to discords [statement](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots000000), any kind of user account botting including so called SelfBots are forbidden. The script will therefore block the execution with a user account token.
 
 ## Installation & Usage
 1. Download the repository from github
@@ -49,11 +45,12 @@ To get the id of a guild open your client settings -> Appearance and then enable
 | originalGuildId | The id of the guild you want to clone. Can be left blank if a guildData.json already exists. |
 | newGuildId | The id of the new guild you want to clone to. |
 | newGuildAdminRoleId | The id of a role with administrator permissions. The bot needs to have this role on the new guild! You can manually create a new role called 'guildcopy' and the script will automatically use it. If you do so, just leave this field empty. |
-| copyEmojis | default: false - set to true to copy emojis (see also [Common Behaviour](https://github.com/Jisagi/Discord-guild-copy#common-behaviour)) |
+| copyEmojis | default: false - Set to true to copy emojis (see also [Common Behaviour](https://github.com/Jisagi/Discord-guild-copy#common-behaviour)) |
 | copyBans | default: false - set to true to copy banned users The bot needs to have the BAN_MEMBERS permission on the original guild if you enable this! |
-| language | default: en - set this to any supported language from the `translations` folder |
+| language | default: en - Set this to any supported language from the `translations` folder |
 | output | default: all - Possible values: `all` for everything, `error` for errors only, `none` for no output at all |
-| debug | default: false - set to true for a more detailed general and error output e.g. when creating an issue |
+| djsVersionCheck | default: true - Checks the local discord.js version by its commit hash. If you periodically run this script, you might want to disable this |
+| debug | default: false - Set to true for a more detailed general and error output e.g. when creating an issue |
 | token | Your account token. The bot does not need any permissions on the original guild (only exception: copyBans=true). |
 
 ## Common Behaviour
@@ -65,7 +62,7 @@ To get the id of a guild open your client settings -> Appearance and then enable
   - Some guilds have VIP regions which cannot be used by normal guilds. Therefore if you copy such a guild the region will be set to us-central.
 
 ## Why using v12.0-dev and not the stable release
-This was developed when 11.2.1 was the latest version which wasn't able to provide all needed features (e.g. categories, permsissions) to clone a whole guild. A port/rewrite to 11.3.X (or any version <12.0) and then to 12.0 again would just be unnecessary busywork.
+This was developed when 11.2.1 was the latest version which wasn't able to provide all needed features (e.g. categories, permissions) to clone a whole guild. A port/rewrite to 11.3.X (or any version <12.0) and then to 12.0 again would just be unnecessary busywork.
 I will probably switch to the stable release as soon as 12.0 is stable.
 
 I try to check new commits for changes which might break something but if I miss one, feel free to remind me ;D
@@ -84,5 +81,5 @@ This software is licensed under the terms of the GPLv3. For more details see [LI
 
 ## Credits
 - [EmberVulpix](https://github.com/EmberVulpix) for the command line arguments
-- [TheLightSpirit](https://github.com/TheLightSpirit) for the french README translation
+- [TheLightSpirit](https://github.com/TheLightSpirit) for the french README translation (not always up-to-date)
 - Everybody who helps adding new features and finding bugs!

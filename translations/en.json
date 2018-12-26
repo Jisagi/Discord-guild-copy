@@ -5,7 +5,8 @@
     "text": {
         "messsageLogin": "Successfully logged in as [@@1@@]. Starting script",
         "messageLanguageAuthor": "Language [@@1@@] selected. Translated by [@@2@@]",
-        "messageVersionCheckSuccess": "Latest script version installed",
+        "messageScriptVersionCheckSuccess": "Latest script version installed",
+        "messageDjsVersionCheckSuccess": "Latest discord.js version installed",
         "messageSerialized": "[@@1@@]. Serialized data was found and will be used",
         "messageSerializerGeneralData": "[@@1@@]. Serializing general data",
         "messageSerializerRoleData": "[@@1@@]. Serializing role data",
@@ -42,10 +43,10 @@
         "messageCreatorBanData": "[@@1@@]. Banning user(s)",
         "messageCreatorBanDataDebug": "[@@1@@].[@@2@@] Banned user [@@3@@]",
         "messageGuildCopyFinished": "Guild copy finished!\nThe last thing to do is to delete the `[@@1@@]` role",
-
         "errorOutputParameter": "Output parameter not valid",
         "errorUserToken": "Specified user token is not a bot user token",
-        "errorNPM": "Please don't install discord.js with 'npm install discord.js'! Installation instructions are in the README",
+        "errorNPM1": "Please update your Nodejs version to 8.0.0 or higher",
+        "errorNPM2": "You don't have the latest version of discord.js installed. Please delete the 'node_modules' folder and the 'package-lock.json' and run 'npm install' again",
         "errorUnspecified": "failed",
         "errorVersionCheckStatuscode": "Version check failed with statuscode: [@@1@@]",
         "errorVersionCheckParsing": "Version check failed: Failed to parse request",

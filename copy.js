@@ -41,9 +41,17 @@ client.on('ready', async () => {
     let guildData = { step: 1 };
 
     try {
+        // npm v5 check (included since node v8)
+        if (!fs.existsSync('package-lock.json')) throw new Error(Translator.disp('errorNPM1'));
+
         // Check discord.js version
-        let djsVersion = require('./node_modules/discord.js/package.json').version;
-        if (djsVersion !== '12.0.0-dev') throw new Error(Translator.disp('errorNPM'));
+        if (settings.djsVersionCheck) {
+            let djs = require('./package-lock.json').dependencies['discord.js'].version;
+            let localVersion = djs.split('#')[1];
+            let latestVersion = await VersionControl.checkLibraryVersion(Translator);
+            if (localVersion !== latestVersion.sha) throw new Error(Translator.disp('errorNPM2'));
+            Logger.logMessage(Translator.disp('messageDjsVersionCheckSuccess'));
+        }
 
         // Check script version
         let { version } = require('./package.json');
@@ -52,7 +60,7 @@ client.on('ready', async () => {
         });
         if (result.error) Logger.logMessage(Translator.disp('errorVersionCheckOther', [result.error]))
         else if (version !== result.version) throw new Error(Translator.disp('errorVersionCheckOutdated', [version, result.version]));
-        if (!result.error) Logger.logMessage(Translator.disp('messageVersionCheckSuccess'));
+        if (!result.error) Logger.logMessage(Translator.disp('messageScriptVersionCheckSuccess'));
 
         // Settings Validation only on restore or clone
         let data = { changed: false };
@@ -101,9 +109,7 @@ client.on('ready', async () => {
 
 client.on('rateLimit', rateLimitObj => {
     if (settings.debug) {
-        Logger.logError(`Rate limit reached!\nTimeout: ${rateLimitObj.timeout}\nLimit: ${rateLimitObj.limit}\n` +
-            `TimeDiff: ${rateLimitObj.timeDifference}\nMethod: ${rateLimitObj.method}\nPath: ${rateLimitObj.path}\n` +
-            `Route: ${rateLimitObj.route}`);
+        Logger.logError(`Rate limit reached! Method: ${rateLimitObj.method}, Path: ${rateLimitObj.path}`);
     }
 });
 
@@ -118,7 +124,7 @@ function printUsage() {
 }
 
 function main() {
-    const args = process.argv.slice(2)
+    const args = process.argv.slice(2);
     if (args.length < 1 || !['backup', 'restore', 'clone'].includes(args[0])) {
         printUsage();
     } else if (args.length >= 2 && ['backup', 'restore'].includes(args[0])) {
