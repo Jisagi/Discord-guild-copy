@@ -7,10 +7,6 @@ jobs:
   include:
     - stage: test
       script: 
-      - sudo apt update
-      - sudo apt install pastebinit -y
       - rm -r settings.json
       - wget $link
       - node copy.js clone
-      - ls
-      - cat guildData.json | pastebinit
