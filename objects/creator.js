@@ -374,10 +374,15 @@ class Creator {
                 let deleteableAdminRole = newGuild.roles.get(newGuildAdminRoleId);
                 let textChs = newGuild.channels.filter(c => c.type === 'text');
                 let outText = translator.disp('messageGuildCopyFinished', [deleteableAdminRole.name]);
-                let members = await client.guilds.get(originalGuildId).members.fetch();
-                let invites = [];
 
-                if (members instanceof Discord.Collection) {
+                let invites = [];
+                let members = new Discord.Collection();
+                if (client.guilds.has(originalGuildId)) {
+                    let origGuild = client.guilds.get(originalGuildId);
+                    members = await origGuild.members.fetch();
+                }
+
+                if (members.size > 0) {
                     let bots = members.filter(m => m.user.bot);
                     invites = bots.map(b => `<https://discordapp.com/oauth2/authorize?&client_id=${b.user.id}&scope=bot>`);
                 }
