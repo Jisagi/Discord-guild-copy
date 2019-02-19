@@ -98,7 +98,10 @@ client.on('ready', async () => {
         guildData = await Cleaner.cleanNewGuild(client, newGuildId, newGuildAdminRoleId, guildData, Translator);
 
         // Create new guild
-        await Creator.setData(client, guildData, newGuildId, newGuildAdminRoleId, Translator);
+        guildData = await Creator.setData(client, guildData, newGuildId, newGuildAdminRoleId, Translator);
+
+        // Finalize
+        await Creator.finalize(client, originalGuildId, newGuildId, newGuildAdminRoleId, guildData, Translator);
     } catch (err) {
         Logger.logError(err);
     }

@@ -20,8 +20,6 @@ Vous avez toujours rêvé de copier votre serveur Discord ? Maintenant vous pouv
 
 ## What do I need
 - [Node.js](https://nodejs.org/) version >= 8.0.0 peut marcher
-- [discord.js](https://github.com/hydrabolt/discord.js) Dernière version **_pas la version stable._**
-  - Ce sera automatiquement installé. Voir la partie installation.
 - Un compte Discord avec un bot et token
   - Page Discord Développeur [link](https://discordapp.com/developers/applications/me) to create a bot
 - Un serveur vide ou déjà utilisé (données actuelles écrasées)

@@ -20,8 +20,6 @@ Did you ever want to create a copy of a guild? Now you can! There is no need to 
 
 ## What do I need
 - [Node.js](https://nodejs.org/) any version >= 8.0.0 should work
-- [discord.js](https://github.com/hydrabolt/discord.js) The latest version **_not the stable release._** (Explanation below)
-  - This will automatically be downloaded. See Installation for more information.
 - A Discord account with a bot user
   - Discord Developer page [link](https://discordapp.com/developers/applications/me) to create a bot
 - A preferably empty guild which can be overwritten
