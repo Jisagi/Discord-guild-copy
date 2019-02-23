@@ -2,6 +2,7 @@ const { copyEmojis, copyBans, output, debug } = require('../settings.json');
 const { Permissions, Collection } = require('discord.js');
 const { validateBitrate, validateUserLimit } = require('./functions');
 const Logger = require('./logger');
+const Discord = require('discord.js');
 
 class Creator {
     /**
@@ -60,10 +61,7 @@ class Creator {
                     guildData = await this.createBans(guildData, newGuild, translator);
                 }
 
-                // Finalize
-                if (output === 'all') guildData = await this.finalize(client, newGuildId, newGuildAdminRoleId, guildData, translator);
-
-                return resolve();
+                return resolve(guildData);
             } catch (err) {
                 return reject(err);
             }
@@ -362,23 +360,40 @@ class Creator {
      * If at least one text channel exists, the message
      * will be posted in the first one, otherwise in the console.
      * @param {Client} client Discord Client
+     * @param {string} originalGuildId Original guild id
      * @param {string} newGuildId New guild id
      * @param {string} newGuildAdminRoleId New guild Administrator role id
      * @param {Object} guildData Serialized guild data
      * @param {Object} translator Translator object
-     * @returns {Object} Promise which resolves into guildData
+     * @returns {Object} Promise
      */
-    static finalize(client, newGuildId, newGuildAdminRoleId, guildData, translator) {
+    static finalize(client, originalGuildId, newGuildId, newGuildAdminRoleId, guildData, translator) {
         return new Promise(async (resolve, reject) => {
             try {
                 let newGuild = client.guilds.get(newGuildId);
                 let deleteableAdminRole = newGuild.roles.get(newGuildAdminRoleId);
                 let textChs = newGuild.channels.filter(c => c.type === 'text');
                 let outText = translator.disp('messageGuildCopyFinished', [deleteableAdminRole.name]);
-                if (textChs.size > 0) await textChs.first().send(`@everyone ${outText}`);
-                else Logger.logMessage(`${guildData.step++}. ${outText}`);
 
-                return resolve(guildData);
+                let invites = [];
+                let members = new Discord.Collection();
+                if (client.guilds.has(originalGuildId)) {
+                    let origGuild = client.guilds.get(originalGuildId);
+                    members = await origGuild.members.fetch();
+                }
+
+                if (members.size > 0) {
+                    let bots = members.filter(m => m.user.bot);
+                    invites = bots.map(b => `<https://discordapp.com/oauth2/authorize?&client_id=${b.user.id}&scope=bot>`);
+                }
+
+                Logger.logMessage(`${guildData.step++}. ${outText}`);
+                if (textChs.size > 0) {
+                    if (invites.length > 0) outText += `\n${translator.disp('messageGuildCopyFinishedInvites')}:\n${invites.join('\n')}`;
+                    await textChs.first().send(`@everyone ${outText}`, { split: true });
+                }
+
+                return resolve();
             } catch (err) {
                 return reject(err);
             }
