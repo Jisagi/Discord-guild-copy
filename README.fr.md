@@ -19,7 +19,7 @@ Vous avez toujours rêvé de copier votre serveur Discord ? Maintenant vous pouv
 - Intégrations (youtube/twitch)
 
 ## What do I need
-- [Node.js](https://nodejs.org/) version >= 8.0.0 peut marcher
+- [Node.js](https://nodejs.org/) version >= 10.0.0 peut marcher
 - Un compte Discord avec un bot et token
   - Page Discord Développeur [link](https://discordapp.com/developers/applications/me) to create a bot
 - Un serveur vide ou déjà utilisé (données actuelles écrasées)
