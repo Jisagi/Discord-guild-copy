@@ -10,6 +10,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "discord.js": "git://github.com/hydrabolt/discord.js.git#master",
+    "parse-yarn-lock": "0.28.4",
     "request": "^2.88.0"
   }
 }

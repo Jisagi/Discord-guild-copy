@@ -48,6 +48,7 @@
         "errorUserToken": "Specified user token is not a bot user token",
         "errorNPM1": "Please update your Nodejs version to 8.0.0 or higher",
         "errorNPM2": "You don't have the latest version of discord.js installed. Please delete the 'node_modules' folder and the 'package-lock.json' and run 'npm install' again",
+        "errorYarn1": "You don't have the latest version of discord.js installed. Please delete the 'node_modules' folder and the 'yarn.lock' and run 'yarn install' again",
         "errorUnspecified": "failed",
         "errorVersionCheckStatuscode": "Version check failed with statuscode: [@@1@@]",
         "errorVersionCheckParsing": "Version check failed: Failed to parse request",

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Discord = require('discord.js');
+const parseYarnLock = require('parse-yarn-lock').default
 const VersionControl = require('./objects/versioncontrol');
 const Validator = require('./objects/validator');
 const Serializer = require('./objects/serializer');
@@ -41,15 +42,22 @@ client.on('ready', async () => {
     let guildData = { step: 1 };
 
     try {
-        // npm v5 check (included since node v8)
-        if (!fs.existsSync('package-lock.json')) throw new Error(Translator.disp('errorNPM1'));
 
         // Check discord.js version
         if (settings.djsVersionCheck) {
-            let djs = require('./package-lock.json').dependencies['discord.js'].version;
-            let localVersion = djs.split('#')[1];
             let latestVersion = await VersionControl.checkLibraryVersion(Translator);
-            if (localVersion !== latestVersion.sha) throw new Error(Translator.disp('errorNPM2'));
+            if (fs.existsSync('./yarn.lock')) {
+                let parsed = parseYarnLock(fs.readFileSync('./yarn.lock').toString()).object;
+                let djs = parsed['discord.js@git://github.com/hydrabolt/discord.js.git#master'].resolved;
+                let localVersion = djs.split('#')[1];
+                if (localVersion !== latestVersion.sha) throw new Error(Translator.disp('errorYarn1'));
+            } else if (fs.existsSync('./package-lock.json')) {
+                let djs = require('./package-lock.json').dependencies['discord.js'].version;
+                let localVersion = djs.split('#')[1];
+                if (localVersion !== latestVersion.sha) throw new Error(Translator.disp('errorNPM2'));
+            } else {
+                throw new Error(Translator.disp('errorNPM1'));
+            }
             Logger.logMessage(Translator.disp('messageDjsVersionCheckSuccess'));
         }
 
