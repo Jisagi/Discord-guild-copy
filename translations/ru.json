@@ -48,6 +48,7 @@
         "errorUserToken": "Указаный токен не является токеном бота",
         "errorNPM1": "Пожалуйста, установите Node.js версии, позднее 8.0.0",
         "errorNPM2": "У вас установлена не последняя версия Discord.js. Пожалуйста, удалите папку 'node_modules' и 'package-lock.json' и запустите 'npm install' еще раз",
+        "errorYarn1": "У вас установлена не последняя версия Discord.js. Пожалуйста, удалите папку 'node_modules' и 'yarn.lock' и запустите 'yarn install' еще раз",
         "errorUnspecified": "провалено",
         "errorVersionCheckStatuscode": "Проверка версии завершилась с ошибкой: [@@1@@]",
         "errorVersionCheckParsing": "Проверка версии завершилась с ошибкой: Не удалось прочитать запрос",
