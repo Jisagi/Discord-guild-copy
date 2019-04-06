@@ -1,11 +1,21 @@
 class Validator {
+
     /**
-     * Settings validation. Filters out the most common errors.
+     * Backup only settings validation.
+     * @param {Client} client Discord Client
+     * @param {string} originalGuildId Original guild id
+     * @param {Object} Translator Translator object
+     */
+    static validateSettingsBackup(client, originalGuildId, Translator) {
+        if (!client.guilds.has(originalGuildId)) throw new Error(Translator.disp('errorSerializationOriginalNotExistent'));
+        let member = client.guilds.get(originalGuildId).me;
+        if (!member.hasPermission('BAN_MEMBERS')) throw new Error(Translator.disp('errorSerializationNoBanPermissions'));
+    }
+
+    /**
+     * Settings validation for restore. Filters out the most common errors.
      * If a role named 'guildcopy' exists on the new guild
      * it will be used in the further process.
-     * This method will only be executed with a bot token, because
-     * when dumping with a user token all this validated data
-     * won't be used anyway.
      * @param {Client} client Discord Client
      * @param {string} originalGuildId Original guild id
      * @param {string} newGuildId New guild id
@@ -13,7 +23,7 @@ class Validator {
      * @param {Object} translator Translator object
      * @returns {Object} Settings data
      */
-    static validateSettings(client, originalGuildId, newGuildId, newGuildAdminRoleId, translator) {
+    static validateSettingsRestore(client, originalGuildId, newGuildId, newGuildAdminRoleId, translator) {
         let data = { changed: false };
 
         if (originalGuildId === newGuildId) throw new Error(translator.disp('errorValidationIdenticalGuilds'));
