@@ -70,7 +70,7 @@ client.on('ready', async () => {
 
         // Settings Validation only on restore or clone
         let data = { changed: false };
-        Validator.validateSettingsBackup(client, originalGuildId, Translator);
+        Validator.validateSettingsBackup(client, originalGuildId, settings.copyBans, Translator);
         if (!isBackup) data = Validator.validateSettingsRestore(client, originalGuildId, newGuildId, newGuildAdminRoleId, Translator);
         if (data.changed) newGuildAdminRoleId = data.newGuildAdminRoleId;
 

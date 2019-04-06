@@ -6,8 +6,9 @@ class Validator {
      * @param {string} originalGuildId Original guild id
      * @param {Object} Translator Translator object
      */
-    static validateSettingsBackup(client, originalGuildId, Translator) {
+    static validateSettingsBackup(client, originalGuildId, copyBans, Translator) {
         if (!client.guilds.has(originalGuildId)) throw new Error(Translator.disp('errorSerializationOriginalNotExistent'));
+        if (!copyBans) return;
         let member = client.guilds.get(originalGuildId).me;
         if (!member.hasPermission('BAN_MEMBERS')) throw new Error(Translator.disp('errorSerializationNoBanPermissions'));
     }
