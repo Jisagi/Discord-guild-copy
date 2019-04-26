@@ -1,44 +1,42 @@
 # Copie de serveur Discord
 
 ## Informations
-Vous avez toujours rêvé de copier votre serveur Discord ? Maintenant vous pouvez ! Pas besoin de faire manuellement les rôles, salons et permissions, cela prendra du temps en fonction de la taille de l'ancien serveur. Ce script fait tout pour vous. Il sauvegarde le serveur dans un fichier et vous pourrez en créer un nouveau. Vous pouvez également partager le fichier du serveur avec des amis.
+Vous avez toujours rêvé de copier votre serveur Discord ? Maintenant vous pouvez ! Pas besoin de recréer manuellement les rôles, salons et permissions. Cela prendra du temps en fonction de la taille de l'ancien serveur. Ce script fait tout pour vous. Il sauvegarde le serveur dans un fichier et vous pourrez en créer un nouveau. Vous pouvez également partager le fichier du serveur avec des amis.
 
-### Ce qui sera copier
+### Ce qui sera copié
 - Catégories
 - Salons textuels et vocaux
 - Rôles (aussi gérés)
 - Permissions des rôles pour les catégories et salons (pas un utilisateur spécifique)
-- Emoticônes
+- Emoticônes & Emojis
 - Banissements
 
-### Ce qui ne sera pas copier
+### Ce qui ne sera pas copié
 - Historique du chat
 - Invitations
 - Webhooks
 - Logs du serveur
 - Intégrations (youtube/twitch)
 
-## What do I need
-- [Node.js](https://nodejs.org/) version >= 8.0.0 peut marcher
-- Un compte Discord avec un bot et token
-  - Page Discord Développeur [link](https://discordapp.com/developers/applications/me) to create a bot
+## De quoi ai-je besoin ?
+- [Node.js](https://nodejs.org/) Toute version >= 10.0.0 peut fonctionner
+- Un compte Discord avec un bot (utilisateur)
+  - Voir la page Discord Développeur [link](https://discordapp.com/developers/applications/me) pour créer un bot
 - Un serveur vide ou déjà utilisé (données actuelles écrasées)
 
 ## Avertissement
-**_Utilisez ce script à vos risques et périls !_**
-
-Selon l'équipe Discord, tout type de compte d'utilisateur, y compris les soi-disant SelfBots, sont interdits. Le script doit être exécuté avec un token bot.
+Le script doit être lancé avec un token de bot (utilisateur)
 
 ## Installation
-1. Téléchargez le repository depuis github
-2. Unzipper le
-3. Ouvrez le dossier
-4. Modifiez les paramètres et remplissez toutes les données nécessaires (voir [Paramètres](https://github.com/Jisagi/Discord-guild-copy#settings) pour plus d'informations).
-5. Ouvrez la console (SUR CE DOSSIER) et exécutez `npm install` (sur Windows, vous pouvez déplacer + cliquer avec le bouton droit de la souris dans le dossier du projet et sélectionner« Ouvrir l’invite de commande ici »).
-6. Exécutez `node copy.js` dans la console pour imprimer
+1. Téléchargez le repository depuis GitHub
+2. Dézippez-le
+3. Allez dans le dossier extrait
+4. Editez le settings.json et complétez les paramètres (voir la section Paramètres juste en bas)
+5. Ouvrez la console et exécutez `npm install` (sur Windows, vous devez cliquer sur Shift + Clic droit dans le dossier et cliquez sur "Ouvrir l'invite de commande ici").
+6. Exécutez `node copy.js` dans la console.
 
 ## Paramètres
-Pour obtenir l'ID d'une guilde, ouvrez les paramètres Discord -> Apparence, puis activez le mode développeur. Si vous cliquez maintenant avec le bouton droit sur un serveur, vous pouvez sélectionner «Copier l'ID».
+Pour obtenir l'ID d'un serveur, ouvrez les paramètres Discord -> Apparence, puis activez le mode développeur. Si vous cliquez maintenant avec le bouton droit sur un serveur, vous pouvez sélectionner «Copier l'ID».
 
 | Variable | Explications |
 | --- | --- |
@@ -47,6 +45,9 @@ Pour obtenir l'ID d'une guilde, ouvrez les paramètres Discord -> Apparence, pui
 | newGuildAdminRoleId | L'ID d'un rôle avec des autorisations d'administrateur. Le bot doit avoir ce rôle dans le nouveau serveur (important) ! Vous pouvez créer manuellement un nouveau rôle appelé «guildcopy» et le script l'utilisera automatiquement. Si vous le faites, laissez simplement ce champ vide. (il est recommandé de ne pas toucher à ce paramètre) |
 | copyEmojis | Par défaut: false - Définissez sur true pour copier les émoticônes (voir aussi [Comportement commun](https://github.com/Jisagi/Discord-guild-copy#common-behaviour)) |
 | copyBans | Par défaut: false - Définissez sur true pour maintenir bannis du serveur les utilisateurs. Le bot doit avoir l'autorisation BAN_MEMBERS (Bannir les membres) sur le serveur copié si vous voulez activez cette option ! |
+| language | Par défaut: en (anglais) - Définissez le sur une des langues disponibles dans le dossier "translations" (ru (russe), en (anglais), de (allemand) |
+| output | Par défaut: all - Sorties (messages qui peuvent être des erreurs ou informations) qui peuvent être renvoyés par le programme. Valeurs possibles: "all" toutes les sorties sont renvoyés, "error" seules les erreurs sont renvoyées, "none" aucune sortie n'est renvoyé |
+| djsVersionCheck | Par défaut: true - Vérifie la version local (actuel) de Discord.js par le commit hashé. Si vous lancez périodiquement le script, vous voudrez peut-être le désactiver |
 | debug | Par défaut: false - Définissez sur true pour un résultat général un peu plus poussé et l'affichage d'une erreur si il y en a, par exemple lors de l'apparition d'un problème |
 | token | Votre token de compte. Le bot n'a pas besoin d'autorisations sur le serveur copié (exepction: copyBans = true). |
 
@@ -54,21 +55,25 @@ Pour obtenir l'ID d'une guilde, ouvrez les paramètres Discord -> Apparence, pui
 - Nouveau nettoyage de guilde
   - Création / Suppression d'émôticones: Cela prendra du temps, surtout s'il y en a beaucoup. Attendez-vous à quelques limites de fréquence lorsque "debug" est activé. Si 'copyEmojis' est désactivé, les émôticones sur le nouveau serveur ne seront pas supprimés ou de nouveaux ajoutés.
   - Création / Suppression des interdictions: voir 'Création / Suppression Emoji' ci-dessus
-  - Suppression de canal: l'utilisateur peut toujours afficher les chaînes supprimées même si elles sont déjà supprimées. Pour résoudre ce problème, redémarrez simplement votre Discord. Vous pouvez le faire pendant que le script est en cours d'exécution.
+  - Suppression de salon: l'utilisateur peut toujours afficher les salosn supprimées même si elles sont déjà supprimées. Pour résoudre ce problème, redémarrez simplement votre Discord. Vous pouvez le faire pendant que le script est en cours d'exécution.
 - Région
-  - Certaines guildes ont des régions VIP (partenariats Discord) qui ne peuvent pas être utilisées par des guildes normales. Par conséquent, si vous copiez une telle guilde, la région sera définie comme centrale.
+  - Certaines guildes ont des régions VIP (partenariats Discord) qui ne peuvent pas être utilisées par des guildes normales. Par conséquent, si vous copiez une telle guilde, la région sera définie comme "Centre des Etats-Unis".
 
-## Pourquoi utiliser v12.0-dev et pas la version stable
+## Pourquoi utiliser la version v12.0-dev et pas la version stable
 Cela a été développé lorsque 11.2.1 était la dernière version qui n'était pas capable de fournir toutes les fonctionnalités nécessaires (par exemple, catégories, permsissions) pour cloner une guilde entière. Un port / réécriture vers 11.3.X (ou toute version <12.0) et à nouveau vers 12.0 serait simplement un travail inutile.
 Je vais probablement passer à la version stable dès que 12.0 sera stable.
 
-Jisagi de vérifier les nouveaux commits pour les changements qui pourraient casser quelque chose mais si il en manque un, conatctez-le.
+Jisagi essaie de vérifier les nouveaux commits pour des changements qui pourraient casser quelque chose mais si il en manque un, n'hésitez pas à le lui rappeler; D
 
 ## Problèmes
 La plupart des problèmes courants sont affichés dans la console lors de l'exécution du script. Si vous rencontrez des pannes ou tout autre comportement étrange non répertorié [ici](https://github.com/Jisagi/Discord-guild-copy#common-behaviour), n'hésitez pas à créer un [problème] (https: // github. com / Jisagi / Discord-guild-copy / issues / new). Le script crée des journaux dans le dossier 'logs'. N'hésitez pas à les télécharger sur quelque chose comme [pastebin](https://pastebin.com/) et ajoutez-les au problème créé pour m'aider à trouver le problème.
 
-## Puis-je suggérer de nouvelles fonctionnalités (ou me plaindre du code laide)
-Bien sûr, il suffit de créer un [numéro](https://github.com/Jisagi/Discord-guild-copy/issues/new) ou une [demande de traction](https://github.com/Jisagi/Discord-guild-copy/compare).
+## Puis-je suggérer de nouvelles fonctionnalités (ou me plaindre du code laid)
+Bien sûr, il suffit de créer une [issue](https://github.com/Jisagi/Discord-guild-copy/issues/new) ou une [pull request](https://github.com/Jisagi/Discord-guild-copy/compare).
+
+## Traduction
+
+Si vous aider à traduire le script, Si vous vous sentez libre. Vous avez juste à créer une copie du "en.json" dans le dossier "translations" et créer une pull request avec la nouvelle traduction. Toutes les [@@X@@] publications sont des parties dynamiques d'une sentence et doivent être dans une place correcte pour chaque langue numérotée en 1,2,3,... Merci d'essayer votre traduction au moins une fois avant de l'envoyer et n'oubliez pas de changer les paramètres "langcode/language/author" qui sont tout en haut du fichier.
 
 ## Licence
 Ce logiciel est sous licence GPLv3. Pour plus de détails, voir [LICENCE](https://github.com/Jisagi/Discord-guild-copy/blob/master/LICENSE).

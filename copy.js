@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Discord = require('discord.js');
+const lockfile = require('@yarnpkg/lockfile');
 const VersionControl = require('./objects/versioncontrol');
 const Validator = require('./objects/validator');
 const Serializer = require('./objects/serializer');
@@ -41,15 +42,20 @@ client.on('ready', async () => {
     let guildData = { step: 1 };
 
     try {
-        // npm v5 check (included since node v8)
-        if (!fs.existsSync('package-lock.json')) throw new Error(Translator.disp('errorNPM1'));
-
-        // Check discord.js version
         if (settings.djsVersionCheck) {
-            let djs = require('./package-lock.json').dependencies['discord.js'].version;
-            let localVersion = djs.split('#')[1];
             let latestVersion = await VersionControl.checkLibraryVersion(Translator);
-            if (localVersion !== latestVersion.sha) throw new Error(Translator.disp('errorNPM2'));
+            if (fs.existsSync('./package-lock.json')) {
+                let djs = require('./package-lock.json').dependencies['discord.js'].version;
+                let localVersion = djs.split('#')[1];
+                if (localVersion !== latestVersion.sha) throw new Error(Translator.disp('errorNPM2'));
+            } else if (fs.existsSync('./yarn.lock')) {
+                let parsed = lockfile.parse(fs.readFileSync('./yarn.lock', 'utf8'));
+                let djs = parsed.object['discord.js@git://github.com/hydrabolt/discord.js.git#master'].resolved;
+                let localVersion = djs.split('#')[1];
+                if (localVersion !== latestVersion.sha) throw new Error(Translator.disp('errorNPM2'));
+            } else {
+                throw new Error(Translator.disp('errorNPM1'));
+            }
             Logger.logMessage(Translator.disp('messageDjsVersionCheckSuccess'));
         }
 
@@ -64,7 +70,8 @@ client.on('ready', async () => {
 
         // Settings Validation only on restore or clone
         let data = { changed: false };
-        if (!isBackup) data = Validator.validateSettings(client, originalGuildId, newGuildId, newGuildAdminRoleId, Translator);
+        Validator.validateSettingsBackup(client, originalGuildId, settings.copyBans, Translator);
+        if (!isBackup) data = Validator.validateSettingsRestore(client, originalGuildId, newGuildId, newGuildAdminRoleId, Translator);
         if (data.changed) newGuildAdminRoleId = data.newGuildAdminRoleId;
 
         // Load/Create serialized guildData
@@ -75,15 +82,8 @@ client.on('ready', async () => {
         } else if (isRestore) {
             throw new Error(Translator.disp('errorRestoreNotExistent', [backupFile]));
         } else {
-            if (!client.guilds.has(originalGuildId)) {
-                throw new Error(Translator.disp('errorSerializationOriginalNotExistent'));
-            }
             let banCollection = new Discord.Collection();
-            try {
-                if (settings.copyBans) banCollection = await client.guilds.get(originalGuildId).fetchBans();
-            } catch (banError) {
-                throw new Error(Translator.disp('errorSerializationNoBanPermissions'));
-            }
+            if (settings.copyBans) banCollection = await client.guilds.get(originalGuildId).fetchBans();
             guildData = Serializer.serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile, Translator);
         }
 
