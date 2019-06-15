@@ -16,6 +16,8 @@ let isBackup = false;
 let isRestore = false;
 let backupFile = 'guildData.json';
 
+console.log(`nodejs: ${process.version}`);
+
 client.on('ready', async () => {
     await Translator.loadTranslations().catch(langError => {
         console.error(langError);
@@ -90,7 +92,7 @@ client.on('ready', async () => {
         // Stop on backup only
         if (isBackup) {
             Logger.logMessage(Translator.disp('messageBackupDone', [guildData.step]));
-            await client.destroy();
+            client.destroy();
             return process.exit(0);
         }
 
@@ -106,7 +108,7 @@ client.on('ready', async () => {
         Logger.logError(err);
     }
 
-    await client.destroy();
+    client.destroy();
     return process.exit(0);
 });
 
