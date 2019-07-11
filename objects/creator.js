@@ -82,9 +82,9 @@ class Creator {
         return new Promise(async (resolve, reject) => {
             try {
                 let general = guildData.general;
-                let allowedRegions = ['brazil', 'us-west', 'singapore', 'eu-central', 'hongkong',
-                    'us-south', 'amsterdam', 'us-central', 'london', 'us-east', 'sydney', 'japan',
-                    'eu-west', 'frankfurt', 'russia'];
+                let allowedRegions = ['brazil', 'us-west', 'japan', 'singapore', 'eu-central',
+                    'hongkong', 'us-south', 'southafrica', 'us-central', 'london', 'us-east',
+                    'sydney', 'eu-west', 'amsterdam', 'india', 'frankfurt', 'russia'];
                 let region = allowedRegions.includes(general.region) ? general.region : 'us-central';
 
                 await newGuild.setName(general.name);
@@ -92,6 +92,17 @@ class Creator {
                 await newGuild.setIcon(general.icon);
                 await newGuild.setVerificationLevel(general.verificationLevel);
                 await newGuild.setExplicitContentFilter(general.explicitContentFilter);
+
+                switch (newGuild.premiumTier) {
+                    case 1:
+                        if (guildData.splash) await newGuild.setSplash(guildData.splash);
+                        break;
+                    case 2:
+                    case 3:
+                        if (guildData.splash) await newGuild.setSplash(guildData.splash);
+                        if (guildData.banner) await newGuild.setBanner(guildData.banner);
+                        break;
+                }
 
                 return resolve();
             } catch (err) {
@@ -262,7 +273,7 @@ class Creator {
                 guildData.voiceChannel.forEach(voiceChannel => {
                     let options = {
                         type: 'voice',
-                        bitrate: validateBitrate(voiceChannel.bitrate),
+                        bitrate: validateBitrate(voiceChannel.bitrate, newGuild.premiumTier),
                         userLimit: validateUserLimit(voiceChannel.userLimit),
                     };
                     if (voiceChannel.parentCat) {
@@ -309,7 +320,35 @@ class Creator {
             try {
                 let counter = 1;
                 let promises = [];
-                guildData.emojis.forEach(emoji => {
+
+                let emojisNormal = guildData.emojis.filter(e => !e.animated);
+                let emojisAnimated = guildData.emojis.filter(e => e.animated);
+                switch (newGuild.premiumTier) {
+                    case 0:
+                        emojisNormal = emojisNormal.filter((e, i) => i < 50);
+                        emojisAnimated = emojisAnimated.filter((e, i) => i < 50);
+                        break;
+                    case 1:
+                        emojisNormal = emojisNormal.filter((e, i) => i < 100);
+                        emojisAnimated = emojisAnimated.filter((e, i) => i < 100);
+                        break;
+                    case 2:
+                        emojisNormal = emojisNormal.filter((e, i) => i < 150);
+                        emojisAnimated = emojisAnimated.filter((e, i) => i < 150);
+                        break;
+                    case 3:
+                        emojisNormal = emojisNormal.filter((e, i) => i < 250);
+                        emojisAnimated = emojisAnimated.filter((e, i) => i < 250);
+                }
+
+                emojisNormal.forEach(emoji => {
+                    let promise = newGuild.emojis.create(emoji.url, emoji.name).then(createdEmoji => {
+                        if (debug) Logger.logMessage(translator.disp('messageCreatorEmojiDataDebug', [guildData.step - 1, counter++, createdEmoji.name]));
+                    });
+                    promises.push(promise);
+                });
+
+                emojisAnimated.forEach(emoji => {
                     let promise = newGuild.emojis.create(emoji.url, emoji.name).then(createdEmoji => {
                         if (debug) Logger.logMessage(translator.disp('messageCreatorEmojiDataDebug', [guildData.step - 1, counter++, createdEmoji.name]));
                     });

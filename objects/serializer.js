@@ -69,10 +69,12 @@ class Serializer {
         return {
             name: guild.name,
             region: guild.region,
-            icon: guild.iconURL({ format: 'png', size: 2048 }),
+            icon: guild.iconURL({ size: 2048 }),
             verificationLevel: guild.verificationLevel,
             afkTimeout: guild.afkTimeout,
             explicitContentFilter: guild.explicitContentFilter,
+            banner: guild.bannerURL({ format: 'png', size: 2048 }),
+            splash: guild.splashURL({ format: 'png', size: 2048 }),
         };
     }
 
@@ -225,6 +227,7 @@ class Serializer {
             return {
                 name: emoji.name,
                 url: emoji.url,
+                animated: emoji.animated,
             };
         });
     }

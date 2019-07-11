@@ -1,7 +1,14 @@
-exports.validateBitrate = origBitrate => {
-    if (origBitrate > 96000) return 96000;
-    else if (origBitrate < 8000) return 8000;
-    else return origBitrate;
+exports.validateBitrate = (origBitrate = 64000, premiumTier = 0) => {
+    switch (premiumTier) {
+        case 0:
+            return origBitrate > 96000 ? 96000 : origBitrate < 8000 ? 8000 : origBitrate;
+        case 1:
+            return origBitrate > 128000 ? 128000 : origBitrate < 8000 ? 8000 : origBitrate;
+        case 2:
+            return origBitrate > 256000 ? 256000 : origBitrate < 8000 ? 8000 : origBitrate;
+        case 3:
+            return origBitrate > 384000 ? 384000 : origBitrate < 8000 ? 8000 : origBitrate;
+    }
 };
 
 exports.validateUserLimit = userLimit => {
