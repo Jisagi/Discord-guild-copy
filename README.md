@@ -58,6 +58,9 @@ To get the id of a guild open your client settings -> Appearance and then enable
   - Channel Deletion: The client might still show deleted channels despite them already being deleted. To fix this, just restart your discord client. You can do this while the script is running.
 - Region
   - Some guilds have VIP regions which cannot be used by normal guilds. Therefore if you copy such a guild the region will be set to us-central.
+- Nitro Boosted Guild
+  - If you backup a nitro boosted guild, this backup can still be loaded on any non or lower boosted guild. The script will automatically scale down the voice channel bitrates and the amount of possible emojis. The same goes for the guild splash and banner.
+  - The Tier 3 vanity URL will not be backed up or copied to a new guild!
 
 ## Why using v12.0-dev and not the stable release
 This was developed when 11.2.1 was the latest version which wasn't able to provide all needed features (e.g. categories, permissions) to clone a whole guild. A port/rewrite to 11.3.X (or any version <12.0) and then to 12.0 again would just be unnecessary busywork.

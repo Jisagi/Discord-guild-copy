@@ -1,6 +1,6 @@
 {
   "name": "guildcopy",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "A tool to copy a discord guild",
   "main": "copy.js",
   "scripts": {
