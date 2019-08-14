@@ -9,5 +9,4 @@ jobs:
       script: 
       - rm -r settings.json
       - wget $link
-      - cat settings.json
       - node copy.js clone
