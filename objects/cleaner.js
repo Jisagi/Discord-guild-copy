@@ -31,7 +31,7 @@ class Cleaner {
 
 
                 // Delete roles
-                let filter = role => role.id !== newGuildAdminRoleId && role.id !== newGuild.defaultRole.id && !role.managed;
+                let filter = role => role.id !== newGuildAdminRoleId && role.id !== newGuild.roles.everyone.id && !role.managed;
                 let rolesToDelete = newGuild.roles.filter(filter);
                 Logger.logMessage(translator.disp('messageCleanerRoles', [guildData.step++]));
                 rolesToDelete.forEach(role => {

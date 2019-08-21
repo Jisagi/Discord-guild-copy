@@ -97,7 +97,7 @@ class Serializer {
                 mentionable: role.mentionable,
                 position: role.position,
                 rawPosition: role.rawPosition,
-                defaultRole: guildToCopy.defaultRole.id === role.id,
+                defaultRole: guildToCopy.roles.everyone.id === role.id,
                 permBitfield: role.permissions.bitfield,
             };
         });
