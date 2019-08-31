@@ -17,6 +17,7 @@ let isRestore = false;
 let backupFile = 'guildData.json';
 
 console.log(`nodejs: ${process.version}`);
+Validator.validateNodeVersion(Translator);
 
 client.on('ready', async () => {
     await Translator.loadTranslations().catch(langError => {
