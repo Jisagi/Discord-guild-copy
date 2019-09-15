@@ -54,7 +54,9 @@ class Serializer {
 
         // Save data to file
         Logger.logMessage(translator.disp('messageSerializerSave', [guildData.step++]));
-        fs.writeFileSync(backupFile, JSON.stringify(guildData));
+        let dataToWrite = Object.assign({}, guildData);
+        delete dataToWrite['step'];
+        fs.writeFileSync(backupFile, JSON.stringify(dataToWrite));
         Logger.logMessage(translator.disp('messageSerializerSaveFinished', [guildData.step++]));
 
         return guildData;
