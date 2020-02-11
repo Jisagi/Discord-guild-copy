@@ -54,7 +54,9 @@ class Serializer {
 
         // Save data to file
         Logger.logMessage(translator.disp('messageSerializerSave', [guildData.step++]));
-        fs.writeFileSync(backupFile, JSON.stringify(guildData));
+        let dataToWrite = Object.assign({}, guildData);
+        delete dataToWrite['step'];
+        fs.writeFileSync(backupFile, JSON.stringify(dataToWrite));
         Logger.logMessage(translator.disp('messageSerializerSaveFinished', [guildData.step++]));
 
         return guildData;
@@ -97,7 +99,7 @@ class Serializer {
                 mentionable: role.mentionable,
                 position: role.position,
                 rawPosition: role.rawPosition,
-                defaultRole: guildToCopy.defaultRole.id === role.id,
+                defaultRole: guildToCopy.roles.everyone.id === role.id,
                 permBitfield: role.permissions.bitfield,
             };
         });

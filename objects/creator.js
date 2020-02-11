@@ -128,9 +128,9 @@ class Creator {
                 guildData.roles.forEach(role => {
                     if (role.defaultRole) {
                         // Edit existing @everyone
-                        let everyoneRole = newGuild.defaultRole;
+                        let everyoneRole = newGuild.roles.everyone;
                         promises.push(everyoneRole.setPermissions(role.permBitfield));
-                        roleReferences.set(role.idOld, { new: newGuild.defaultRole, old: role });
+                        roleReferences.set(role.idOld, { new: newGuild.roles.everyone, old: role });
                     } else {
                         // Create new role
                         let newRole = {

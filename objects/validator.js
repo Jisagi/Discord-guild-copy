@@ -1,6 +1,18 @@
 class Validator {
 
     /**
+     * Ensure node version is >= 10.0.0
+     * @param {Object} Translator Translator object
+     */
+    static validateNodeVersion(Translator) {
+        const rgx = /(\d+)\.(\d+)\.(\d+)/g;
+        let res = process.version.match(rgx);
+        if (res.length < 1) throw new Error(Translator.disp('errorNode'));
+        let major = res[0].split('.')[0];
+        if (!Number.isInteger(parseInt(major)) || new Number(major) < 10) throw new Error(Translator.disp('errorNode'));
+    }
+
+    /**
      * Backup only settings validation.
      * @param {Client} client Discord Client
      * @param {string} originalGuildId Original guild id

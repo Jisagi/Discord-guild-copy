@@ -14,9 +14,11 @@ const client = new Discord.Client();
 
 let isBackup = false;
 let isRestore = false;
+let isClone = false;
 let backupFile = 'guildData.json';
 
 console.log(`nodejs: ${process.version}`);
+Validator.validateNodeVersion(Translator);
 
 client.on('ready', async () => {
     await Translator.loadTranslations().catch(langError => {
@@ -72,8 +74,8 @@ client.on('ready', async () => {
 
         // Settings Validation only on restore or clone
         let data = { changed: false };
-        Validator.validateSettingsBackup(client, originalGuildId, settings.copyBans, Translator);
-        if (!isBackup) data = Validator.validateSettingsRestore(client, originalGuildId, newGuildId, newGuildAdminRoleId, Translator);
+        if (isBackup || isClone) Validator.validateSettingsBackup(client, originalGuildId, settings.copyBans, Translator);
+        if (isRestore || isClone) data = Validator.validateSettingsRestore(client, originalGuildId, newGuildId, newGuildAdminRoleId, Translator);
         if (data.changed) newGuildAdminRoleId = data.newGuildAdminRoleId;
 
         // Load/Create serialized guildData
@@ -140,6 +142,7 @@ function main() {
         }
     }
     isBackup = args[0] === 'backup';
+    isClone = args[0] === 'clone';
     isRestore = args[0] === 'restore';
     client.login(settings.token);
 }
