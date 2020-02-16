@@ -18,7 +18,7 @@ class Creator {
     static setData(client, guildData, newGuildId, newGuildAdminRoleId, translator) {
         return new Promise(async (resolve, reject) => {
             try {
-                let newGuild = client.guilds.get(newGuildId);
+                let newGuild = client.guilds.cache.get(newGuildId);
                 guildData.references = {};
 
                 // General
@@ -409,15 +409,15 @@ class Creator {
     static finalize(client, originalGuildId, newGuildId, newGuildAdminRoleId, guildData, translator) {
         return new Promise(async (resolve, reject) => {
             try {
-                let newGuild = client.guilds.get(newGuildId);
-                let deleteableAdminRole = newGuild.roles.get(newGuildAdminRoleId);
-                let textChs = newGuild.channels.filter(c => c.type === 'text');
+                let newGuild = client.guilds.cache.get(newGuildId);
+                let deleteableAdminRole = newGuild.roles.cache.get(newGuildAdminRoleId);
+                let textChs = newGuild.channels.cache.filter(c => c.type === 'text');
                 let outText = translator.disp('messageGuildCopyFinished', [deleteableAdminRole.name]);
 
                 let invites = [];
                 let members = new Discord.Collection();
-                if (client.guilds.has(originalGuildId)) {
-                    let origGuild = client.guilds.get(originalGuildId);
+                if (client.guilds.cache.has(originalGuildId)) {
+                    let origGuild = client.guilds.cache.get(originalGuildId);
                     members = await origGuild.members.fetch();
                 }
 

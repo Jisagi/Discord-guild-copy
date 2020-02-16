@@ -19,10 +19,10 @@ class Validator {
      * @param {Object} Translator Translator object
      */
     static validateSettingsBackup(client, originalGuildId, copyBans, Translator) {
-        if (!client.guilds.has(originalGuildId)) throw new Error(Translator.disp('errorSerializationOriginalNotExistent'));
+        if (!client.guilds.cache.has(originalGuildId)) throw new Error(Translator.disp('errorSerializationOriginalNotExistent'));
         if (!copyBans) return;
-        let member = client.guilds.get(originalGuildId).me;
-        if (!member.hasPermission('BAN_MEMBERS')) throw new Error(Translator.disp('errorSerializationNoBanPermissions'));
+        let member = client.guilds.cache.get(originalGuildId).me;
+        if (!member.hasPermission('BAN_MEMBERS') && !member.hasPermission('ADMINISTRATOR')) throw new Error(Translator.disp('errorSerializationNoBanPermissions'));
     }
 
     /**
@@ -40,15 +40,15 @@ class Validator {
         let data = { changed: false };
 
         if (originalGuildId === newGuildId) throw new Error(translator.disp('errorValidationIdenticalGuilds'));
-        if (!client.guilds.has(newGuildId)) throw new Error(translator.disp('errorValidationNotMember'));
-        let newGuild = client.guilds.get(newGuildId);
+        if (!client.guilds.cache.has(newGuildId)) throw new Error(translator.disp('errorValidationNotMember'));
+        let newGuild = client.guilds.cache.get(newGuildId);
         if (!newGuild.available) throw new Error(translator.disp('errorValidationAvailability'));
 
         let newGuildAdminRole;
-        if (newGuild.roles.has(newGuildAdminRoleId)) {
-            newGuildAdminRole = newGuild.roles.get(newGuildAdminRoleId);
+        if (newGuild.roles.cache.has(newGuildAdminRoleId)) {
+            newGuildAdminRole = newGuild.roles.cache.get(newGuildAdminRoleId);
         } else {
-            newGuildAdminRole = newGuild.roles.find(elem => elem.name.toLowerCase() === 'guildcopy');
+            newGuildAdminRole = newGuild.roles.cache.find(elem => elem.name.toLowerCase() === 'guildcopy');
             if (newGuildAdminRole) {
                 data.changed = true;
                 data.newGuildAdminRoleId = newGuildAdminRole.id;
@@ -57,9 +57,9 @@ class Validator {
 
         if (!newGuildAdminRole) throw new Error(translator.disp('errorValidationAdminRoleExists'));
         if (!newGuildAdminRole.permissions.has('ADMINISTRATOR')) throw new Error(translator.disp('errorValidationAdminRolePersmissions'));
-        let highestRole = newGuild.roles.reduce((prev, role) => role.comparePositionTo(prev) > 0 ? role : prev, newGuild.roles.first());
+        let highestRole = newGuild.roles.cache.reduce((prev, role) => role.comparePositionTo(prev) > 0 ? role : prev, newGuild.roles.cache.first());
         if (newGuildAdminRole.id !== highestRole.id) throw new Error(translator.disp('errorValidationAdminRolePosition'));
-        if (!newGuild.me.roles.has(newGuildAdminRole.id)) throw new Error(translator.disp('errorValidationAdminRoleNotAssigned'));
+        if (!newGuild.me.roles.cache.has(newGuildAdminRole.id)) throw new Error(translator.disp('errorValidationAdminRoleNotAssigned'));
 
         return data;
     }

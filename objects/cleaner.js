@@ -18,12 +18,12 @@ class Cleaner {
     static cleanNewGuild(client, newGuildId, newGuildAdminRoleId, guildData, translator) {
         return new Promise(async (resolve, reject) => {
             try {
-                let newGuild = client.guilds.get(newGuildId);
+                let newGuild = client.guilds.cache.get(newGuildId);
 
                 // Delete channel
                 Logger.logMessage(translator.disp('messageCleanerChannels', [guildData.step++]));
                 let promises = [];
-                newGuild.channels.forEach(channel => {
+                newGuild.channels.cache.forEach(channel => {
                     promises.push(channel.delete());
                 });
                 await Promise.all(promises);
@@ -32,7 +32,7 @@ class Cleaner {
 
                 // Delete roles
                 let filter = role => role.id !== newGuildAdminRoleId && role.id !== newGuild.roles.everyone.id && !role.managed;
-                let rolesToDelete = newGuild.roles.filter(filter);
+                let rolesToDelete = newGuild.roles.cache.filter(filter);
                 Logger.logMessage(translator.disp('messageCleanerRoles', [guildData.step++]));
                 rolesToDelete.forEach(role => {
                     promises.push(role.delete());
@@ -43,7 +43,7 @@ class Cleaner {
                 // Delete emojis
                 if (copyEmojis) {
                     Logger.logMessage(translator.disp('messageCleanerEmojis', [guildData.step++]));
-                    newGuild.emojis.forEach(emoji => {
+                    newGuild.emojis.cache.forEach(emoji => {
                         promises.push(emoji.delete());
                     });
                 }

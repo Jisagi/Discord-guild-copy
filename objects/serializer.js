@@ -15,7 +15,7 @@ class Serializer {
      */
     static serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile, translator) {
         // Check
-        let guildToCopy = client.guilds.get(originalGuildId);
+        let guildToCopy = client.guilds.cache.get(originalGuildId);
         if (!guildToCopy.available) throw new Error(translator.disp('errorSerializerGuildUnavailable'));
 
         // General
@@ -89,7 +89,7 @@ class Serializer {
      * @returns {Object[]} Serialized guild roles
      */
     static serializeRoles(guildToCopy) {
-        let roleCol = guildToCopy.roles.sort((a, b) => b.position - a.position);
+        let roleCol = guildToCopy.roles.cache.sort((a, b) => b.position - a.position);
         let roles = roleCol.map(role => {
             return {
                 idOld: role.id,
@@ -116,11 +116,11 @@ class Serializer {
      * @returns {Object[]} Serialized category channels
      */
     static serializeCategories(guildToCopy) {
-        let categoryCollection = guildToCopy.channels.filter(c => c.type === 'category');
+        let categoryCollection = guildToCopy.channels.cache.filter(c => c.type === 'category');
         categoryCollection = categoryCollection.sort((a, b) => a.position - b.position);
         let categories = categoryCollection.map(category => {
             let permOverwritesCollection = category.permissionOverwrites.filter(pOver => pOver.type === 'role');
-            permOverwritesCollection = permOverwritesCollection.filter(pOver => guildToCopy.roles.has(pOver.id));
+            permOverwritesCollection = permOverwritesCollection.filter(pOver => guildToCopy.roles.cache.has(pOver.id));
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
@@ -150,11 +150,11 @@ class Serializer {
      * @returns {Object[]} Serialized text channels
      */
     static serializeTextChannels(guildToCopy) {
-        let textChannelCollection = guildToCopy.channels.filter(c => c.type === 'text');
+        let textChannelCollection = guildToCopy.channels.cache.filter(c => c.type === 'text');
         textChannelCollection = textChannelCollection.sort((a, b) => a.rawPosition - b.rawPosition);
         let textChannel = textChannelCollection.map(tCh => {
             let permOverwritesCollection = tCh.permissionOverwrites.filter(pOver => pOver.type === 'role');
-            permOverwritesCollection = permOverwritesCollection.filter(pOver => guildToCopy.roles.has(pOver.id));
+            permOverwritesCollection = permOverwritesCollection.filter(pOver => guildToCopy.roles.cache.has(pOver.id));
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
@@ -189,11 +189,11 @@ class Serializer {
      * @returns {Object[]} Serialized voice channels
      */
     static serializeVoiceChannels(guildToCopy) {
-        let voiceChannelCollection = guildToCopy.channels.filter(c => c.type === 'voice');
+        let voiceChannelCollection = guildToCopy.channels.cache.filter(c => c.type === 'voice');
         voiceChannelCollection = voiceChannelCollection.sort((a, b) => a.rawPosition - b.rawPosition);
         let voiceChannel = voiceChannelCollection.map(vCh => {
             let permOverwritesCollection = vCh.permissionOverwrites.filter(pOver => pOver.type === 'role');
-            permOverwritesCollection = permOverwritesCollection.filter(pOver => guildToCopy.roles.has(pOver.id));
+            permOverwritesCollection = permOverwritesCollection.filter(pOver => guildToCopy.roles.cache.has(pOver.id));
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
@@ -225,7 +225,7 @@ class Serializer {
      * @returns {Object[]} Serialized emojis
      */
     static serializeEmojis(guildToCopy) {
-        return guildToCopy.emojis.map(emoji => {
+        return guildToCopy.emojis.cache.map(emoji => {
             return {
                 name: emoji.name,
                 url: emoji.url,
