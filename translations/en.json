@@ -33,7 +33,7 @@
         "messageCreatorRoleData": "[@@1@@]. Creating role(s)",
         "messageCreatorRoleDataDebug": "[@@1@@].[@@2@@] Created role \"[@@3@@]\"",
         "messageCreatorCategoryData": "[@@1@@]. Creating category(ies)",
-        "messageCreatorCategoryDataDebug": "[@@1@@].[@@2@@] Created catergory \"[@@3@@]\"",
+        "messageCreatorCategoryDataDebug": "[@@1@@].[@@2@@] Created category \"[@@3@@]\"",
         "messageCreatorTextData": "[@@1@@]. Creating text channel(s)",
         "messageCreatorTextDataDebug": "[@@1@@].[@@2@@] Created text channel \"[@@3@@]\"",
         "messageCreatorVoiceData": "[@@1@@]. Creating voice channel(s)",
