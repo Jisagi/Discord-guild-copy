@@ -43,7 +43,7 @@
         "messageCreatorBanData": "[@@1@@]. Bannissements des utilisateurs",
         "messageCreatorBanDataDebug": "[@@1@@].[@@2@@] Utilisateur [@@3@@] banni",
         "messageGuildCopyFinished": "Copie du serveur terminée! Le rôle `[@@1@@]` peut maintenant être supprimé",
-        "messageGuildCopyFinishedInvites": "Liste des lien d'invitation pour tous les bots",
+        "messageGuildCopyFinishedInvites": "Liste des liens d'invitation pour tous les bots",
         "errorOutputParameter": "Paramètre de sortie invalide",
         "errorUserToken": "Le token spécifié n'est pas un token de bot",
         "errorNode": "Veuillez mettre à jour votre version de Nodejs à 10.0.0 ou plus",
