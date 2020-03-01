@@ -19,7 +19,7 @@ Vous avez toujours rêvé de copier votre serveur Discord ? Maintenant vous pouv
 - Intégrations (youtube/twitch)
 
 ## De quoi ai-je besoin ?
-- [Node.js](https://nodejs.org/) Toute version >= 10.0.0 peut fonctionner
+- [Node.js](https://nodejs.org/) Toute version >= 12.0.0 peut fonctionner
 - Un compte Discord avec un bot (utilisateur)
   - Voir la page Discord Développeur [link](https://discordapp.com/developers/applications/me) pour créer un bot
 - Un serveur vide ou déjà utilisé (données actuelles écrasées)
@@ -58,12 +58,6 @@ Pour obtenir l'ID d'un serveur, ouvrez les paramètres Discord -> Apparence, pui
   - Suppression de salon: l'utilisateur peut toujours afficher les salosn supprimées même si elles sont déjà supprimées. Pour résoudre ce problème, redémarrez simplement votre Discord. Vous pouvez le faire pendant que le script est en cours d'exécution.
 - Région
   - Certaines guildes ont des régions VIP (partenariats Discord) qui ne peuvent pas être utilisées par des guildes normales. Par conséquent, si vous copiez une telle guilde, la région sera définie comme "Centre des Etats-Unis".
-
-## Pourquoi utiliser la version v12.0-dev et pas la version stable
-Cela a été développé lorsque 11.2.1 était la dernière version qui n'était pas capable de fournir toutes les fonctionnalités nécessaires (par exemple, catégories, permsissions) pour cloner une guilde entière. Un port / réécriture vers 11.3.X (ou toute version <12.0) et à nouveau vers 12.0 serait simplement un travail inutile.
-Je vais probablement passer à la version stable dès que 12.0 sera stable.
-
-Jisagi essaie de vérifier les nouveaux commits pour des changements qui pourraient casser quelque chose mais si il en manque un, n'hésitez pas à le lui rappeler; D
 
 ## Problèmes
 La plupart des problèmes courants sont affichés dans la console lors de l'exécution du script. Si vous rencontrez des pannes ou tout autre comportement étrange non répertorié [ici](https://github.com/Jisagi/Discord-guild-copy#common-behaviour), n'hésitez pas à créer un [problème] (https: // github. com / Jisagi / Discord-guild-copy / issues / new). Le script crée des journaux dans le dossier 'logs'. N'hésitez pas à les télécharger sur quelque chose comme [pastebin](https://pastebin.com/) et ajoutez-les au problème créé pour m'aider à trouver le problème.

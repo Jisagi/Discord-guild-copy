@@ -19,7 +19,7 @@ Did you ever want to create a copy of a guild? Now you can! There is no need to 
 - Third party integrations (Twitch/Youtube)
 
 ## What do I need
-- [Node.js](https://nodejs.org/) any version >= 10.0.0 should work
+- [Node.js](https://nodejs.org/) any version >= 12.0.0 should work
 - A Discord account with a bot user
   - Discord Developer page [link](https://discordapp.com/developers/applications/me) to create a bot
 - (Optional) A preferably empty guild which can be overwritten
@@ -61,12 +61,6 @@ To get the id of a guild open your client settings -> Appearance and then enable
 - Nitro Boosted Guild
   - If you backup a nitro boosted guild, this backup can still be loaded on any non or lower boosted guild. The script will automatically scale down the voice channel bitrates and the amount of possible emojis. The same goes for the guild splash and banner.
   - The Tier 3 vanity URL will not be backed up or copied to a new guild!
-
-## Why using v12.0-dev and not the stable release
-This was developed when 11.2.1 was the latest version which wasn't able to provide all needed features (e.g. categories, permissions) to clone a whole guild. A port/rewrite to 11.3.X (or any version <12.0) and then to 12.0 again would just be unnecessary busywork.
-I will probably switch to the stable release as soon as 12.0 is stable.
-
-I try to check new commits for changes which might break something but if I miss one, feel free to remind me ;D
 
 ## Issues
 Most of the common issues are displayed in the console while running the script. If you encounter crashes or any other weird behaviour not listed [here](https://github.com/Jisagi/Discord-guild-copy#common-behaviour) feel free to create an [issue](https://github.com/Jisagi/Discord-guild-copy/issues/new). The script creates logs in the 'logs' folder. Feel free to upload those to something like [pastebin](https://pastebin.com/) and add them to the created issue to help me find the problem.

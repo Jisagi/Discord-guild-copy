@@ -1,7 +1,7 @@
 {
     "langcode": "fr",
     "language": "Français",
-    "author": "Androz2091",
+    "author": "Androz2091 & Dany-LF",
     "text": {
         "messsageLogin": "Connecté avec succès en tant que [@@1@@]. Démarrage du script",
         "messageLanguageAuthor": "Langage [@@1@@] sélectionné. Traduit par [@@2@@]",
@@ -46,7 +46,7 @@
         "messageGuildCopyFinishedInvites": "Liste des liens d'invitation pour tous les bots",
         "errorOutputParameter": "Paramètre de sortie invalide",
         "errorUserToken": "Le token spécifié n'est pas un token de bot",
-        "errorNode": "Veuillez mettre à jour votre version de Nodejs à 10.0.0 ou plus",
+        "errorNode": "Veuillez mettre à jour votre version de Nodejs à 12.0.0 ou plus",
         "errorNPM1": "Il n'y a pas de fichier package-lock.json ni de fichier yarn.lock. Veuillez ne pas supprimer ces fichiers",
         "errorNPM2": "Vous n'avez pas la dernière version de discord.js installée. Veuillez supprimer le dossier 'node_modules' et le 'package-lock.json'/'yarn.lock' et tapez 'npm install'/'yarn install' de nouveau.",
         "errorUnspecified": "raté",
