@@ -43,17 +43,21 @@ To get the id of a guild open your client settings -> Appearance and then enable
 | originalGuildId | The id of the guild you want to clone. Can be left blank if a guildData.json file already exists. |
 | newGuildId | The id of the new guild you want to clone to. |
 | newGuildAdminRoleId | The id of a role with administrator permissions. The bot needs to have this role on the new guild! You can manually create a new role called 'guildcopy' and the script will automatically use it. If you do so, just leave this field empty. |
-| copyEmojis | default: false - Set to true to copy emojis (see also [Common Behaviour](https://github.com/Jisagi/Discord-guild-copy#common-behaviour)) |
-| copyBans | default: false - set to true to copy banned users. The bot needs to have the BAN_MEMBERS permission on the original guild if you enable this! |
+| cleanup | default: true - Set this to false, to skip the cleanup phase on the new guild |
+| copy.General | default: true - Set this to false to skip setting general guild data e.g. the guild's name or the icon |
+| copy.RCC | default: true - RCC stands for roles & categories & channels. Set this to false to skip creating them altogether |
+| copy.Emojis | default: false - Set to true to copy emojis (see also [Common Behaviour](https://github.com/Jisagi/Discord-guild-copy#common-behaviour)) |
+| copy.Bans | default: false - Set to true to copy banned users. The bot needs to have the BAN_MEMBERS permission on the original guild if you enable this! |
 | language | default: en - Set this to any supported language from the `translations` folder |
 | output | default: all - Possible values: `all` for everything, `error` for errors only, `none` for no output at all |
 | djsVersionCheck | default: true - Checks the local discord.js version by its commit hash. If you periodically run this script, you might want to disable this |
+| sleepTimeout | default: 0 - Sleep timer in milliseconds (>0) to avoid possible ratelimits on very large guilds creations  |
 | debug | default: false - Set to true for a more detailed general and error output e.g. when creating an issue |
-| token | The bot token. The bot does not need any permissions on the original guild (only exception: copyBans=true). |
+| token | The bot token. The bot does not need any permissions on the original guild (only exception: copy.Bans=true). |
 
 ## Common Behaviour
 - New guild cleanup
-  - Emoji Creation/Deletion: This will take time, especially if there are lots of them. Expect a few rateLimits when 'debug' is on. If 'copyEmojis' is disabled, emojis on the new server won't be deleted or new ones added.
+  - Emoji Creation/Deletion: This will take time, especially if there are lots of them. Expect a few rateLimits when 'debug' is on. If 'copyEmojis' is disabled, emojis on the new server won't be deleted or new ones added. Emojis can only be created, if the original ones still exist on their respective server, bcause they are not saved locally or the back file
   - Bans Creation/Deletion: see 'Emoji Creation/Deletion' above
   - Channel Deletion: The client might still show deleted channels despite them already being deleted. To fix this, just restart your discord client. You can do this while the script is running.
 - Region

@@ -64,6 +64,7 @@
         "errorRestoreNotExistent": "Wiederherstellen wurde ausgewählt, jedoch existiert die Backupdatei '[@@1@@]' nicht",
         "errorSerializationOriginalNotExistent": "Originaler Server existiert nicht. Bitten prüfen Sie die Id in den Einstellungen und ob der Bot Mitglied auf dem Server ist",
         "errorSerializationNoBanPermissions": "Bitte geben Sie dem Bot die BAN_MEMBERS Berechtigung auf dem originalen Server wenn Sie alle Bans sichern möchten",
-        "errorSerializerGuildUnavailable": "Originaler Server ist nicht verfügbar. Bitte versuchen Sie es später erneut"
+        "errorSerializerGuildUnavailable": "Originaler Server ist nicht verfügbar. Bitte versuchen Sie es später erneut",
+        "scriptFinished": "[@@1@@]. Abgeschlossen"
     }
 }

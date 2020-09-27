@@ -1,4 +1,4 @@
-const { copyEmojis, copyBans, output, debug } = require('../settings.json');
+const { copy, debug, sleepTimeout } = require('../settings.json');
 const { Permissions, Collection } = require('discord.js');
 const { validateBitrate, validateUserLimit } = require('./functions');
 const Logger = require('./logger');
@@ -22,42 +22,46 @@ class Creator {
                 guildData.references = {};
 
                 // General
-                Logger.logMessage(translator.disp('messageCreatorGeneralData', [guildData.step++]));
-                await this.setGeneralData(guildData, newGuild);
-
-                // Roles
-                if (guildData.roles.length) {
-                    Logger.logMessage(translator.disp('messageCreatorRoleData', [guildData.step++]));
-                    guildData.references.roles = await this.createRoles(guildData, newGuild, translator);
+                if (copy.General) {
+                    Logger.logMessage(translator.disp('messageCreatorGeneralData', guildData.step++));
+                    await this.setGeneralData(guildData, newGuild);
                 }
 
-                // Categories
-                if (guildData.categories.length) {
-                    Logger.logMessage(translator.disp('messageCreatorCategoryData', [guildData.step++]));
-                    guildData.references.categories = await this.createCategories(guildData, newGuild, translator);
-                }
+                if (copy.RCC) {
+                    // Roles
+                    if (guildData.roles.length) {
+                        Logger.logMessage(translator.disp('messageCreatorRoleData', guildData.step++));
+                        guildData.references.roles = await this.createRoles(guildData, newGuild, translator);
+                    }
 
-                // Text channel
-                if (guildData.textChannel.length) {
-                    Logger.logMessage(translator.disp('messageCreatorTextData', [guildData.step++]));
-                    await this.createTextChannel(guildData, newGuild, translator);
-                }
+                    // Categories
+                    if (guildData.categories.length) {
+                        Logger.logMessage(translator.disp('messageCreatorCategoryData', guildData.step++));
+                        guildData.references.categories = await this.createCategories(guildData, newGuild, translator);
+                    }
 
-                // Voice channel
-                if (guildData.voiceChannel.length) {
-                    Logger.logMessage(translator.disp('messageCreatorVoiceData', [guildData.step++]));
-                    await this.createVoiceChannel(guildData, newGuild, translator);
+                    // Text channel
+                    if (guildData.textChannel.length) {
+                        Logger.logMessage(translator.disp('messageCreatorTextData', guildData.step++));
+                        await this.createTextChannel(guildData, newGuild, translator);
+                    }
+
+                    // Voice channel
+                    if (guildData.voiceChannel.length) {
+                        Logger.logMessage(translator.disp('messageCreatorVoiceData', guildData.step++));
+                        await this.createVoiceChannel(guildData, newGuild, translator);
+                    }
                 }
 
                 // Emojis
-                if (copyEmojis && guildData.emojis.length) {
-                    Logger.logMessage(translator.disp('messageCreatorEmojiData', [guildData.step++]));
+                if (copy.Emojis && guildData.emojis.length) {
+                    Logger.logMessage(translator.disp('messageCreatorEmojiData', guildData.step++));
                     await this.createEmojis(guildData, newGuild, translator);
                 }
 
                 // Bans
-                if (copyBans && guildData.bans.length) {
-                    Logger.logMessage(translator.disp('messageCreatorBanData', [guildData.step++]));
+                if (copy.Bans && guildData.bans.length) {
+                    Logger.logMessage(translator.disp('messageCreatorBanData', guildData.step++));
                     guildData = await this.createBans(guildData, newGuild, translator);
                 }
 
@@ -123,13 +127,14 @@ class Creator {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-                let promises = [];
                 let roleReferences = new Collection();
-                guildData.roles.forEach(role => {
+                for (let i = 0; i < guildData.roles.length; i++) {
+                    let role = guildData.roles[i];
+
                     if (role.defaultRole) {
                         // Edit existing @everyone
                         let everyoneRole = newGuild.roles.everyone;
-                        promises.push(everyoneRole.setPermissions(role.permBitfield));
+                        await everyoneRole.setPermissions(role.permBitfield)
                         roleReferences.set(role.idOld, { new: newGuild.roles.everyone, old: role });
                     } else {
                         // Create new role
@@ -143,15 +148,13 @@ class Creator {
                             },
                         };
 
-                        let promise = newGuild.roles.create(newRole).then(createdRole => {
-                            if (debug) Logger.logMessage(translator.disp('messageCreatorRoleDataDebug', [guildData.step - 1, counter++, createdRole.name]));
-                            roleReferences.set(role.idOld, { new: createdRole, old: role });
-                        });
-                        promises.push(promise);
+                        let createdRole = await newGuild.roles.create(newRole);
+                        if (debug) Logger.logMessage(translator.disp('messageCreatorRoleDataDebug', guildData.step - 1, counter++, createdRole.name));
+                        roleReferences.set(role.idOld, { new: createdRole, old: role });
                     }
-                });
 
-                await Promise.all(promises);
+                    await this.sleep();
+                }
 
                 return resolve(roleReferences);
             } catch (err) {
@@ -171,9 +174,10 @@ class Creator {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-                let promises = [];
                 let categoryReferences = new Collection();
-                guildData.categories.forEach(category => {
+                for (let i = 0; i < guildData.categories.length; i++) {
+                    let category = guildData.categories[i];
+
                     let overwrites = category.permOverwrites.map(permOver => {
                         return {
                             id: guildData.references.roles.get(permOver.id).new.id,
@@ -186,14 +190,12 @@ class Creator {
                         permissionOverwrites: overwrites,
                     };
 
-                    let promise = newGuild.channels.create(category.name, options).then(createdCategory => {
-                        if (debug) Logger.logMessage(translator.disp('messageCreatorCategoryDataDebug', [guildData.step - 1, counter++, createdCategory.name]));
-                        categoryReferences.set(category.idOld, { new: createdCategory, old: category });
-                    });
-                    promises.push(promise);
-                });
+                    let createdCategory = await newGuild.channels.create(category.name, options);
+                    if (debug) Logger.logMessage(translator.disp('messageCreatorCategoryDataDebug', guildData.step - 1, counter++, createdCategory.name));
+                    categoryReferences.set(category.idOld, { new: createdCategory, old: category });
 
-                await Promise.all(promises);
+                    this.sleep();
+                }
 
                 return resolve(categoryReferences);
             } catch (err) {
@@ -214,13 +216,14 @@ class Creator {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-                let promises = [];
                 let newSystemChannel = null;
-                let channelWithTopics = new Collection();
-                guildData.textChannel.forEach(textChannel => {
+                for (let i = 0; i < guildData.textChannel.length; i++) {
+                    let textChannel = guildData.textChannel[i];
+
                     let options = {
                         type: 'text',
                         nsfw: textChannel.nsfw,
+                        topic: textChannel.topic,
                     };
                     if (textChannel.parentCat) {
                         options.parent = guildData.references.categories.get(textChannel.parentCat).new.id;
@@ -235,19 +238,17 @@ class Creator {
                         });
                     }
 
-                    let promise = newGuild.channels.create(textChannel.name, options).then(createdChannel => {
-                        if (textChannel.isSystemChannel) newSystemChannel = createdChannel.id;
-                        if (textChannel.topic) channelWithTopics.set(createdChannel.id, { newCh: createdChannel, topic: textChannel.topic });
-                        if (debug) Logger.logMessage(translator.disp('messageCreatorTextDataDebug', [guildData.step - 1, counter++, createdChannel.name]));
-                    });
-                    promises.push(promise);
-                });
+                    let createdChannel = await newGuild.channels.create(textChannel.name, options);
+                    if (textChannel.isSystemChannel) newSystemChannel = createdChannel.id;
+                    if (debug) Logger.logMessage(translator.disp('messageCreatorTextDataDebug', guildData.step - 1, counter++, createdChannel.name));
 
-                await Promise.all(promises);
-                if (newSystemChannel) await newGuild.setSystemChannel(newSystemChannel);
-                promises = [];
-                channelWithTopics.forEach(ch => promises.push(ch.newCh.setTopic(ch.topic)));
-                await Promise.all(promises);
+                    await this.sleep();
+                }
+
+                if (newSystemChannel) {
+                    await newGuild.setSystemChannel(newSystemChannel);
+                    await newGuild.setSystemChannelFlags(guildData.general.systemChannelFlags);
+                }
 
                 return resolve();
             } catch (err) {
@@ -268,9 +269,10 @@ class Creator {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-                let promises = [];
                 let newAfkChannel = null;
-                guildData.voiceChannel.forEach(voiceChannel => {
+                for (let i = 0; i < guildData.voiceChannel.length; i++) {
+                    let voiceChannel = guildData.voiceChannel[i];
+
                     let options = {
                         type: 'voice',
                         bitrate: validateBitrate(voiceChannel.bitrate, newGuild.premiumTier),
@@ -289,14 +291,13 @@ class Creator {
                         });
                     }
 
-                    let promise = newGuild.channels.create(voiceChannel.name, options).then(createdChannel => {
-                        if (voiceChannel.isAfkChannel) newAfkChannel = createdChannel.id;
-                        if (debug) Logger.logMessage(translator.disp('messageCreatorVoiceDataDebug', [guildData.step - 1, counter++, createdChannel.name]));
-                    });
-                    promises.push(promise);
-                });
+                    let createdChannel = await newGuild.channels.create(voiceChannel.name, options);
+                    if (voiceChannel.isAfkChannel) newAfkChannel = createdChannel.id;
+                    if (debug) Logger.logMessage(translator.disp('messageCreatorVoiceDataDebug', guildData.step - 1, counter++, createdChannel.name));
 
-                await Promise.all(promises);
+                    await this.sleep();
+                }
+
                 if (newAfkChannel) await newGuild.setAFKChannel(newAfkChannel);
                 await newGuild.setAFKTimeout(guildData.general.afkTimeout);
 
@@ -319,7 +320,6 @@ class Creator {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-                let promises = [];
 
                 let emojisNormal = guildData.emojis.filter(e => !e.animated);
                 let emojisAnimated = guildData.emojis.filter(e => e.animated);
@@ -341,21 +341,21 @@ class Creator {
                         emojisAnimated = emojisAnimated.filter((e, i) => i < 250);
                 }
 
-                emojisNormal.forEach(emoji => {
-                    let promise = newGuild.emojis.create(emoji.url, emoji.name).then(createdEmoji => {
-                        if (debug) Logger.logMessage(translator.disp('messageCreatorEmojiDataDebug', [guildData.step - 1, counter++, createdEmoji.name]));
-                    });
-                    promises.push(promise);
-                });
+                for (let i = 0; i < emojisNormal.length; i++) {
+                    let emoji = emojisNormal[i];
+                    let createdEmoji = await newGuild.emojis.create(emoji.url, emoji.name);
+                    if (debug) Logger.logMessage(translator.disp('messageCreatorEmojiDataDebug', guildData.step - 1, counter++, createdEmoji.name));
 
-                emojisAnimated.forEach(emoji => {
-                    let promise = newGuild.emojis.create(emoji.url, emoji.name).then(createdEmoji => {
-                        if (debug) Logger.logMessage(translator.disp('messageCreatorEmojiDataDebug', [guildData.step - 1, counter++, createdEmoji.name]));
-                    });
-                    promises.push(promise);
-                });
+                    await this.sleep();
+                }
 
-                await Promise.all(promises);
+                for (let i = 0; i < emojisAnimated.length; i++) {
+                    let emoji = emojisAnimated[i];
+                    let createdEmoji = await newGuild.emojis.create(emoji.url, emoji.name)
+                    if (debug) Logger.logMessage(translator.disp('messageCreatorEmojiDataDebug', guildData.step - 1, counter++, createdEmoji.name));
+
+                    await this.sleep();
+                }
 
                 return resolve();
             } catch (err) {
@@ -376,16 +376,15 @@ class Creator {
         return new Promise(async (resolve, reject) => {
             try {
                 let counter = 1;
-                let promises = [];
-                guildData.bans.forEach(ban => {
-                    let promise = newGuild.members.ban(ban.userId, { reason: ban.reason }).then(newBan => {
-                        let username = newBan.user ? newBan.user.tag : newBan.tag || newBan;
-                        if (debug) Logger.logMessage(translator.disp('messageCreatorBanDataDebug', [guildData.step - 1, counter++, username]));
-                    });
-                    promises.push(promise);
-                });
 
-                await Promise.all(promises);
+                for (let i = 0; i < guildData.bans.length; i++) {
+                    let ban = guildData.bans[i];
+                    let newBan = await newGuild.members.ban(ban.userId, { reason: ban.reason })
+                    let username = newBan.user ? newBan.user.tag : newBan.tag || newBan;
+                    if (debug) Logger.logMessage(translator.disp('messageCreatorBanDataDebug', guildData.step - 1, counter++, username));
+
+                    await this.sleep();
+                }
 
                 return resolve(guildData);
             } catch (err) {
@@ -412,7 +411,7 @@ class Creator {
                 let newGuild = client.guilds.cache.get(newGuildId);
                 let deleteableAdminRole = newGuild.roles.cache.get(newGuildAdminRoleId);
                 let textChs = newGuild.channels.cache.filter(c => c.type === 'text');
-                let outText = translator.disp('messageGuildCopyFinished', [deleteableAdminRole.name]);
+                let outText = translator.disp('messageGuildCopyFinished', deleteableAdminRole.name);
 
                 let invites = [];
                 let members = new Discord.Collection();
@@ -436,6 +435,12 @@ class Creator {
             } catch (err) {
                 return reject(err);
             }
+        });
+    }
+
+    static sleep(time = sleepTimeout) {
+        return new Promise(resolve => {
+            setTimeout(() => { resolve() }, time);
         });
     }
 }

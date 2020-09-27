@@ -32,13 +32,13 @@ client.on('ready', async () => {
     }
 
     let lang = Translator.getLanguage();
-    Logger.logMessage(Translator.disp('messageLanguageAuthor', [lang['language'], lang['author']]));
+    Logger.logMessage(Translator.disp('messageLanguageAuthor', lang['language'], lang['author']));
 
     if (!client.user.bot) {
         Logger.logError(Translator.disp('errorUserToken'));
         return process.exit(1);
     }
-    Logger.logMessage(Translator.disp('messsageLogin', [client.user.tag]));
+    Logger.logMessage(Translator.disp('messsageLogin', client.user.tag));
 
     let originalGuildId = settings.originalGuildId;
     let newGuildId = settings.newGuildId;
@@ -68,13 +68,13 @@ client.on('ready', async () => {
         let result = await VersionControl.checkVersion(Translator).catch(err => {
             return { error: err || new Error(Translator.disp('errorUnspecified')) };
         });
-        if (result.error) Logger.logMessage(Translator.disp('errorVersionCheckOther', [result.error]))
-        else if (version !== result.version) throw new Error(Translator.disp('errorVersionCheckOutdated', [version, result.version]));
+        if (result.error) Logger.logMessage(Translator.disp('errorVersionCheckOther', result.error))
+        else if (version !== result.version) throw new Error(Translator.disp('errorVersionCheckOutdated', version, result.version));
         if (!result.error) Logger.logMessage(Translator.disp('messageScriptVersionCheckSuccess'));
 
         // Settings Validation only on restore or clone
         let data = { changed: false };
-        if (isBackup || isClone) Validator.validateSettingsBackup(client, originalGuildId, settings.copyBans, Translator);
+        if (isBackup || isClone) Validator.validateSettingsBackup(client, originalGuildId, settings.copy.Bans, Translator);
         if (isRestore || isClone) data = Validator.validateSettingsRestore(client, originalGuildId, newGuildId, newGuildAdminRoleId, Translator);
         if (data.changed) newGuildAdminRoleId = data.newGuildAdminRoleId;
 
@@ -82,30 +82,31 @@ client.on('ready', async () => {
         if (fs.existsSync(backupFile) && isRestore) {
             guildData = require(`./${backupFile}`);
             guildData.step = 1;
-            Logger.logMessage(Translator.disp('messageSerialized', [guildData.step++]));
+            Logger.logMessage(Translator.disp('messageSerialized', guildData.step++));
         } else if (isRestore) {
-            throw new Error(Translator.disp('errorRestoreNotExistent', [backupFile]));
+            throw new Error(Translator.disp('errorRestoreNotExistent', backupFile));
         } else {
             let banCollection = new Discord.Collection();
-            if (settings.copyBans) banCollection = await client.guilds.cache.get(originalGuildId).fetchBans();
+            if (settings.copy.Bans) banCollection = await client.guilds.cache.get(originalGuildId).fetchBans();
             guildData = Serializer.serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile, Translator);
         }
 
         // Stop on backup only
         if (isBackup) {
-            Logger.logMessage(Translator.disp('messageBackupDone', [guildData.step]));
+            Logger.logMessage(Translator.disp('messageBackupDone', guildData.step));
             client.destroy();
             return process.exit(0);
         }
 
         // Cleanup new guild
-        guildData = await Cleaner.cleanNewGuild(client, newGuildId, newGuildAdminRoleId, guildData, Translator);
+        if (settings.cleanup) guildData = await Cleaner.cleanNewGuild(client, newGuildId, newGuildAdminRoleId, guildData, Translator);
 
         // Create new guild
         guildData = await Creator.setData(client, guildData, newGuildId, newGuildAdminRoleId, Translator);
 
         // Finalize
-        await Creator.finalize(client, originalGuildId, newGuildId, newGuildAdminRoleId, guildData, Translator);
+        if (settings.copy.RCC) await Creator.finalize(client, originalGuildId, newGuildId, newGuildAdminRoleId, guildData, Translator);
+        else Logger.logMessage(Translator.disp('scriptFinished', guildData.step));
     } catch (err) {
         Logger.logError(err);
     }

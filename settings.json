@@ -2,11 +2,17 @@
     "originalGuildId": "",
     "newGuildId": "",
     "newGuildAdminRoleId": "",
-    "copyEmojis": false,
-    "copyBans": false,
+    "cleanup": true,
+    "copy": {
+        "General": true,
+        "RCC": true,
+        "Emojis": false,
+        "Bans": false
+    },
     "language": "en",
     "output": "all",
     "djsVersionCheck": true,
+    "sleepTimeout": 0,
     "debug": false,
     "token": ""
 }

@@ -45,11 +45,11 @@ function validateTranslation(translationData) {
     return true;
 };
 
-exports.disp = (textIdentifier, additionalText = []) => {
-    return this.displayTranslationText(textIdentifier, additionalText);
+exports.disp = (textIdentifier, ...additionalText) => {
+    return displayTranslationText(textIdentifier, additionalText);
 }
 
-exports.displayTranslationText = (textIdentifier, additionalText = []) => {
+function displayTranslationText(textIdentifier, additionalText = []) {
     let text;
     if (!languages[language]) text = languages['en'].text[textIdentifier];
     else text = languages[language].text[textIdentifier];

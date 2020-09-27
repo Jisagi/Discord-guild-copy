@@ -64,6 +64,7 @@
         "errorRestoreNotExistent": "Restauration spécifiée mais la sauvegarde du serveur '[@@1@@]' n'existe pas",
         "errorSerializationOriginalNotExistent": "Le serveur original à copier n'existe pas. Veuillez vérifier si l'identifiant dans les paramètres est correct et également si le bot est membre de ce serveur",
         "errorSerializationNoBanPermissions": "Vous avez essayé de copier les bannissements sans donner au bot la permission `BAN_MEMBERS` sur le serveur d'origine",
-        "errorSerializerGuildUnavailable": "Le serveur original n'est pas disponible. Veuillez réessayer plus tard"
+        "errorSerializerGuildUnavailable": "Le serveur original n'est pas disponible. Veuillez réessayer plus tard",
+        "scriptFinished": "[@@1@@]. Terminé"
     }
 }

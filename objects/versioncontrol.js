@@ -38,7 +38,7 @@ class VersionControl {
             };
             request(opt, (err, res, body) => {
                 if (err) return reject(err);
-                if (res.statusCode !== 200) return reject(Translator.disp('errorVersionCheckStatuscode', [res.statusCode]));
+                if (res.statusCode !== 200) return reject(Translator.disp('errorVersionCheckStatuscode', res.statusCode));
                 try {
                     resolve(JSON.parse(body));
                 } catch (error) {

@@ -19,45 +19,45 @@ class Serializer {
         if (!guildToCopy.available) throw new Error(translator.disp('errorSerializerGuildUnavailable'));
 
         // General
-        Logger.logMessage(translator.disp('messageSerializerGeneralData', [guildData.step++]));
+        Logger.logMessage(translator.disp('messageSerializerGeneralData', guildData.step++));
         guildData.general = this.getGeneralData(guildToCopy);
 
         // Roles
-        Logger.logMessage(translator.disp('messageSerializerRoleData', [guildData.step++]));
+        Logger.logMessage(translator.disp('messageSerializerRoleData', guildData.step++));
         guildData.roles = guildData.roles = this.serializeRoles(guildToCopy);
-        if (debug) Logger.logMessage(translator.disp('messageSerializerRoleDataDebug', [guildData.step - 1, guildData.roles.length]));
+        if (debug) Logger.logMessage(translator.disp('messageSerializerRoleDataDebug', guildData.step - 1, guildData.roles.length));
 
         // Categories
-        Logger.logMessage(translator.disp('messageSerializerCategoryData', [guildData.step++]));
+        Logger.logMessage(translator.disp('messageSerializerCategoryData', guildData.step++));
         guildData.categories = this.serializeCategories(guildToCopy);
-        if (debug) Logger.logMessage(translator.disp('messageSerializerCategoryDataDebug', [guildData.step - 1, guildData.categories.length]));
+        if (debug) Logger.logMessage(translator.disp('messageSerializerCategoryDataDebug', guildData.step - 1, guildData.categories.length));
 
         // Text channel
-        Logger.logMessage(translator.disp('messageSerializerTextData', [guildData.step++]));
+        Logger.logMessage(translator.disp('messageSerializerTextData', guildData.step++));
         guildData.textChannel = this.serializeTextChannels(guildToCopy);
-        if (debug) Logger.logMessage(translator.disp('messageSerializerTextDataDebug', [guildData.step - 1, guildData.textChannel.length]));
+        if (debug) Logger.logMessage(translator.disp('messageSerializerTextDataDebug', guildData.step - 1, guildData.textChannel.length));
 
         // Voice channel
-        Logger.logMessage(translator.disp('messageSerializerVoiceData', [guildData.step++]));
+        Logger.logMessage(translator.disp('messageSerializerVoiceData', guildData.step++));
         guildData.voiceChannel = this.serializeVoiceChannels(guildToCopy);
-        if (debug) Logger.logMessage(translator.disp('messageSerializerVoiceDataDebug', [guildData.step - 1, guildData.voiceChannel.length]));
+        if (debug) Logger.logMessage(translator.disp('messageSerializerVoiceDataDebug', guildData.step - 1, guildData.voiceChannel.length));
 
         // Emojis
-        Logger.logMessage(translator.disp('messageSerializerEmojiData', [guildData.step++]));
+        Logger.logMessage(translator.disp('messageSerializerEmojiData', guildData.step++));
         guildData.emojis = this.serializeEmojis(guildToCopy);
-        if (debug) Logger.logMessage(translator.disp('messageSerializerEmojiDataDebug', [guildData.step - 1, guildData.emojis.length]));
+        if (debug) Logger.logMessage(translator.disp('messageSerializerEmojiDataDebug', guildData.step - 1, guildData.emojis.length));
 
         // Bans
-        Logger.logMessage(translator.disp('messageSerializerBanData', [guildData.step++]));
+        Logger.logMessage(translator.disp('messageSerializerBanData', guildData.step++));
         guildData.bans = this.serializeBans(banCollection);
-        if (debug) Logger.logMessage(translator.disp('messageSerializerBanDataDebug', [guildData.step - 1, guildData.bans.length]));
+        if (debug) Logger.logMessage(translator.disp('messageSerializerBanDataDebug', guildData.step - 1, guildData.bans.length));
 
         // Save data to file
-        Logger.logMessage(translator.disp('messageSerializerSave', [guildData.step++]));
+        Logger.logMessage(translator.disp('messageSerializerSave', guildData.step++));
         let dataToWrite = Object.assign({}, guildData);
         delete dataToWrite['step'];
         fs.writeFileSync(backupFile, JSON.stringify(dataToWrite));
-        Logger.logMessage(translator.disp('messageSerializerSaveFinished', [guildData.step++]));
+        Logger.logMessage(translator.disp('messageSerializerSaveFinished', guildData.step++));
 
         return guildData;
     }
@@ -77,6 +77,7 @@ class Serializer {
             explicitContentFilter: guild.explicitContentFilter,
             banner: guild.bannerURL({ format: 'png', size: 2048 }),
             splash: guild.splashURL({ format: 'png', size: 2048 }),
+            systemChannelFlags: guild.systemChannelFlags.bitfield
         };
     }
 

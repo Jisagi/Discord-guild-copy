@@ -64,6 +64,7 @@
         "errorRestoreNotExistent": "Specified restore but guild backup '[@@1@@]' doesn't exist",
         "errorSerializationOriginalNotExistent": "Original guild to copy does not exist. Please check if the id in the settings is correct and if the bot is also member of this guild",
         "errorSerializationNoBanPermissions": "You tried to copy bans without giving the bot the BAN_MEMBERS permissions on the original guild",
-        "errorSerializerGuildUnavailable": "Original guild not available. Please try again later"
+        "errorSerializerGuildUnavailable": "Original guild not available. Please try again later",
+        "scriptFinished": "[@@1@@]. Finished"
     }
 }

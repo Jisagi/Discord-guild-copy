@@ -1,4 +1,4 @@
-const { copyEmojis, copyBans } = require('../settings.json');
+const { copy } = require('../settings.json');
 const Logger = require('./logger');
 
 class Cleaner {
@@ -21,7 +21,7 @@ class Cleaner {
                 let newGuild = client.guilds.cache.get(newGuildId);
 
                 // Delete channel
-                Logger.logMessage(translator.disp('messageCleanerChannels', [guildData.step++]));
+                Logger.logMessage(translator.disp('messageCleanerChannels', guildData.step++));
                 let promises = [];
                 newGuild.channels.cache.forEach(channel => {
                     promises.push(channel.delete());
@@ -33,7 +33,7 @@ class Cleaner {
                 // Delete roles
                 let filter = role => role.id !== newGuildAdminRoleId && role.id !== newGuild.roles.everyone.id && !role.managed;
                 let rolesToDelete = newGuild.roles.cache.filter(filter);
-                Logger.logMessage(translator.disp('messageCleanerRoles', [guildData.step++]));
+                Logger.logMessage(translator.disp('messageCleanerRoles', guildData.step++));
                 rolesToDelete.forEach(role => {
                     promises.push(role.delete());
                 });
@@ -41,8 +41,8 @@ class Cleaner {
                 promises = [];
 
                 // Delete emojis
-                if (copyEmojis) {
-                    Logger.logMessage(translator.disp('messageCleanerEmojis', [guildData.step++]));
+                if (copy.Emojis) {
+                    Logger.logMessage(translator.disp('messageCleanerEmojis', guildData.step++));
                     newGuild.emojis.cache.forEach(emoji => {
                         promises.push(emoji.delete());
                     });
@@ -51,15 +51,15 @@ class Cleaner {
                 promises = [];
 
                 // Delete Bans
-                if (copyBans) {
-                    Logger.logMessage(translator.disp('messageCleanerBans', [guildData.step++]));
+                if (copy.Bans) {
+                    Logger.logMessage(translator.disp('messageCleanerBans', guildData.step++));
                     let bans = await newGuild.fetchBans();
                     let unbans = [];
                     bans.forEach(ban => unbans.push(newGuild.members.unban(ban.user.id)));
                     await Promise.all(unbans);
                 }
 
-                Logger.logMessage(translator.disp('messageCleanerFinished', [guildData.step++]));
+                Logger.logMessage(translator.disp('messageCleanerFinished', guildData.step++));
                 return resolve(guildData);
             } catch (err) {
                 return reject(err);
