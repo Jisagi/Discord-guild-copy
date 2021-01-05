@@ -139,13 +139,11 @@ class Creator {
                     } else {
                         // Create new role
                         let newRole = {
-                            data: {
                                 name: role.name,
                                 color: role.hexColor,
                                 hoist: role.hoist,
                                 mentionable: role.mentionable,
                                 permissions: role.permBitfield,
-                            },
                         };
 
                         let createdRole = await newGuild.roles.create(newRole);
