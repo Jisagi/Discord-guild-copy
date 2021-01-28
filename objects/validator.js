@@ -22,7 +22,7 @@ class Validator {
         if (!client.guilds.cache.has(originalGuildId)) throw new Error(Translator.disp('errorSerializationOriginalNotExistent'));
         if (!copyBans) return;
         let member = client.guilds.cache.get(originalGuildId).me;
-        if (!member.hasPermission('BAN_MEMBERS') && !member.hasPermission('ADMINISTRATOR')) throw new Error(Translator.disp('errorSerializationNoBanPermissions'));
+        if (!member.permissions.has('BAN_MEMBERS') && !member.permissions.has('ADMINISTRATOR')) throw new Error(Translator.disp('errorSerializationNoBanPermissions'));
     }
 
     /**
