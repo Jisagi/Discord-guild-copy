@@ -101,7 +101,7 @@ class Serializer {
                 position: role.position,
                 rawPosition: role.rawPosition,
                 defaultRole: guildToCopy.roles.everyone.id === role.id,
-                permBitfield: role.permissions.bitfield,
+                permBitfield: role.permissions.bitfield.toString(),
             };
         });
 
@@ -125,8 +125,8 @@ class Serializer {
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
-                    allowed: pOver.allow.bitfield,
-                    denied: pOver.deny.bitfield,
+                    allowed: pOver.allow.bitfield.toString(),
+                    denied: pOver.deny.bitfield.toString(),
                 };
             });
 
@@ -159,8 +159,8 @@ class Serializer {
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
-                    allowed: pOver.allow.bitfield,
-                    denied: pOver.deny.bitfield,
+                    allowed: pOver.allow.bitfield.toString(),
+                    denied: pOver.deny.bitfield.toString(),
                 };
             });
 
@@ -198,8 +198,8 @@ class Serializer {
             let permOverwrites = permOverwritesCollection.map(pOver => {
                 return {
                     id: pOver.id,
-                    allowed: pOver.allow.bitfield,
-                    denied: pOver.deny.bitfield,
+                    allowed: pOver.allow.bitfield.toString(),
+                    denied: pOver.deny.bitfield.toString(),
                 };
             });
 

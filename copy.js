@@ -10,7 +10,8 @@ const Creator = require('./objects/creator');
 const Logger = require('./objects/logger');
 const Translator = require('./objects/translator');
 const settings = require('./settings.json');
-const client = new Discord.Client();
+const { Intents } = require('discord.js');
+const client = new Discord.Client({ intents: Intents.ALL });
 
 let isBackup = false;
 let isRestore = false;
