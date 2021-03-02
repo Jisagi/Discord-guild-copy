@@ -25,6 +25,7 @@ Did you ever want to create a copy of a guild? Now you can! There is no need to 
   - [for other platforms](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - A Discord account with a bot user
   - Discord Developer page [link](https://discordapp.com/developers/applications/me) to create a bot
+  - On the Developer page in the "Bot" tab, enable both Intents below "Privileged Gateway Intents"
 - (Optional) A preferably empty guild which can be overwritten
 
 ## Disclaimer
