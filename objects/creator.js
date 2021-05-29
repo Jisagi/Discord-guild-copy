@@ -4,6 +4,8 @@ const { validateBitrate, validateUserLimit } = require('./functions');
 const Logger = require('./logger');
 const Discord = require('discord.js');
 
+BigInt.prototype.toJSON = function() { return this.toString(); };
+
 class Creator {
     /**
      * New Guild creation.

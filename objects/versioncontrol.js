@@ -19,7 +19,7 @@ class VersionControl {
      */
     static checkVersion(Translator) {
         return new Promise(async (resolve, reject) => {
-            let link = 'http://guildcopy.jisagi.net/version';
+            let link = 'https://raw.githubusercontent.com/Jisagi/Discord-guild-copy/master/package.json';
             let result = await this.requestVersion(Translator, link).catch(err => reject(err));
             resolve(result);
         });
