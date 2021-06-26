@@ -53,7 +53,7 @@ class Cleaner {
                 // Delete Bans
                 if (copy.Bans) {
                     Logger.logMessage(translator.disp('messageCleanerBans', guildData.step++));
-                    let bans = await newGuild.fetchBans();
+                    let bans = await newGuild.bans.fetch();
                     let unbans = [];
                     bans.forEach(ban => unbans.push(newGuild.members.unban(ban.user.id)));
                     await Promise.all(unbans);

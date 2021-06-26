@@ -88,7 +88,7 @@ client.on('ready', async () => {
             throw new Error(Translator.disp('errorRestoreNotExistent', backupFile));
         } else {
             let banCollection = new Discord.Collection();
-            if (settings.copy.Bans) banCollection = await client.guilds.cache.get(originalGuildId).fetchBans();
+            if (settings.copy.Bans) banCollection = await client.guilds.cache.get(originalGuildId).bans.fetch();
             guildData = Serializer.serializeOldGuild(client, originalGuildId, banCollection, guildData, backupFile, Translator);
         }
 
