@@ -70,7 +70,6 @@ class Serializer {
     static getGeneralData(guild) {
         return {
             name: guild.name,
-            region: guild.region,
             icon: guild.iconURL({ size: 2048 }),
             verificationLevel: guild.verificationLevel,
             afkTimeout: guild.afkTimeout,
@@ -206,6 +205,7 @@ class Serializer {
             return {
                 id: vCh.id,
                 name: vCh.name,
+                region: vCh.rtcRegion,
                 position: vCh.position,
                 rawPosition: vCh.rawPosition,
                 parentCat: vCh.parentID,

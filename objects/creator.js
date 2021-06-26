@@ -88,13 +88,8 @@ class Creator {
         return new Promise(async (resolve, reject) => {
             try {
                 let general = guildData.general;
-                let allowedRegions = ['brazil', 'us-west', 'japan', 'singapore', 'eu-central',
-                    'hongkong', 'us-south', 'southafrica', 'us-central', 'london', 'us-east',
-                    'sydney', 'eu-west', 'amsterdam', 'india', 'frankfurt', 'russia'];
-                let region = allowedRegions.includes(general.region) ? general.region : 'us-central';
 
                 await newGuild.setName(general.name);
-                await newGuild.setRegion(region);
                 await newGuild.setIcon(general.icon);
                 await newGuild.setVerificationLevel(general.verificationLevel);
                 await newGuild.setExplicitContentFilter(general.explicitContentFilter);
@@ -292,6 +287,7 @@ class Creator {
                     }
 
                     let createdChannel = await newGuild.channels.create(voiceChannel.name, options);
+                    await createdChannel.setRTCRegion(voiceChannel.region);
                     if (voiceChannel.isAfkChannel) newAfkChannel = createdChannel.id;
                     if (debug) Logger.logMessage(translator.disp('messageCreatorVoiceDataDebug', guildData.step - 1, counter++, createdChannel.name));
 
