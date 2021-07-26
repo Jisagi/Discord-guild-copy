@@ -287,7 +287,7 @@ class Creator {
                     }
 
                     let createdChannel = await newGuild.channels.create(voiceChannel.name, options);
-                    await createdChannel.setRTCRegion(voiceChannel.region);
+                    if (voiceChannel.region) await createdChannel.setRTCRegion(voiceChannel.region);
                     if (voiceChannel.isAfkChannel) newAfkChannel = createdChannel.id;
                     if (debug) Logger.logMessage(translator.disp('messageCreatorVoiceDataDebug', guildData.step - 1, counter++, createdChannel.name));
 
