@@ -171,7 +171,7 @@ class Serializer {
                 isSystemChannel: guildToCopy.systemChannelID === tCh.id,
                 position: tCh.position,
                 rawPosition: tCh.rawPosition,
-                parentCat: tCh.parentID,
+                parentCat: tCh.parentId,
                 permLocked: tCh.permissionsLocked ? tCh.permissionsLocked : false,
                 permOverwrites: tCh.permissionsLocked ? null : permOverwrites,
             };
@@ -208,7 +208,7 @@ class Serializer {
                 region: vCh.rtcRegion,
                 position: vCh.position,
                 rawPosition: vCh.rawPosition,
-                parentCat: vCh.parentID,
+                parentCat: vCh.parentId,
                 bitrate: vCh.bitrate,
                 userLimit: vCh.userLimit,
                 isAfkChannel: guildToCopy.afkChannelID === vCh.id,

@@ -181,7 +181,7 @@ class Creator {
                         };
                     });
                     let options = {
-                        type: 'category',
+                        type: 'GUILD_CATEGORY',
                         permissionOverwrites: overwrites,
                     };
 
@@ -216,7 +216,7 @@ class Creator {
                     let textChannel = guildData.textChannel[i];
 
                     let options = {
-                        type: 'text',
+                        type: 'GUILD_TEXT',
                         nsfw: textChannel.nsfw,
                         topic: textChannel.topic,
                     };
@@ -269,7 +269,7 @@ class Creator {
                     let voiceChannel = guildData.voiceChannel[i];
 
                     let options = {
-                        type: 'voice',
+                        type: 'GUILD_VOICE',
                         bitrate: validateBitrate(voiceChannel.bitrate, newGuild.premiumTier),
                         userLimit: validateUserLimit(voiceChannel.userLimit),
                     };
