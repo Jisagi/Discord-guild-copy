@@ -36,7 +36,7 @@ Did you ever want to create a copy of a guild? Now you can! There is no need to 
 2. Unzip it
 3. Navigate into the extracted folder
 4. Edit the `settings.json` and fill in all necessary data (see [Settings](https://github.com/Jisagi/Discord-guild-copy#settings) for more information)
-5. Open the console and run `npm install` (on windows you can shift + right click inside the project folder and select 'open command prompt here'). You can also use `yarn install`
+5. Open the console and run `npm install` (on windows you can shift + right click inside the project folder and select 'open command prompt here'). You can alternatively use `yarn install` (requires nodejs >= 16.6.0)
 6. Run `node copy.js` in the console to print usage
 
 ## Settings

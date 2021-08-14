@@ -211,7 +211,7 @@ class Serializer {
                 parentCat: vCh.parentId,
                 bitrate: vCh.bitrate,
                 userLimit: vCh.userLimit,
-                isAfkChannel: guildToCopy.afkChannelID === vCh.id,
+                isAfkChannel: guildToCopy.afkChannelId === vCh.id,
                 permLocked: vCh.permissionsLocked ? vCh.permissionsLocked : false,
                 permOverwrites: vCh.permissionsLocked ? null : permOverwrites,
             };
