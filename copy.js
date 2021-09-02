@@ -55,7 +55,7 @@ client.on('ready', async () => {
                 if (localVersion !== latestVersion.sha) throw new Error(Translator.disp('errorNPM2'));
             } else if (fs.existsSync('./yarn.lock')) {
                 let parsed = lockfile.parse(fs.readFileSync('./yarn.lock', 'utf8'));
-                let djs = parsed.object['discord.js@git://github.com/hydrabolt/discord.js.git#master'].resolved;
+                let djs = parsed.object['discord.js@git://github.com/discordjs/discord.js.git#master'].resolved;
                 let localVersion = djs.split('#')[1];
                 if (localVersion !== latestVersion.sha) throw new Error(Translator.disp('errorNPM2'));
             } else {

@@ -7,7 +7,7 @@ class VersionControl {
      */
     static checkLibraryVersion(Translator) {
         return new Promise(async (resolve, reject) => {
-            let link = 'https://api.github.com/repos/hydrabolt/discord.js/commits/master';
+            let link = 'https://api.github.com/repos/discordjs/discord.js/commits';
             let result = await this.requestVersion(Translator, link).catch(err => reject(err));
             resolve(result);
         });
