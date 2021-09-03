@@ -19,7 +19,7 @@ Did you ever want to create a copy of a guild? Now you can! There is no need to 
 - Third party integrations (Twitch/Youtube)
 
 ## What do I need
-- [Node.js](https://nodejs.org/) any version >= 14.0.0 should work
+- [Node.js](https://nodejs.org/) any version >= 16.6.0 should work
 - Git
   - [for windows](https://git-scm.com/download/win) or
   - [for other platforms](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
