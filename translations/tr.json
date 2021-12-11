@@ -1,6 +1,6 @@
 {
     "langcode": "tr",
-    "language": "Turkish",
+    "language": "Türkçe",
     "author": "Mustafa",
     "text": {
         "messsageLogin": "Başarıyla [@@1@@] olarak giriş yapıldı. Kod başlatılıyor.",
