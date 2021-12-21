@@ -1,6 +1,6 @@
 {
   "name": "guildcopy",
-  "version": "1.5.10",
+  "version": "1.5.11",
   "description": "A tool to copy a discord guild",
   "main": "copy.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0",
-    "discord.js": "git://github.com/discordjs/discord.js.git",
+    "discord.js": "git://github.com/discordjs/discord.js",
     "request": "^2.88.2"
   }
 }
