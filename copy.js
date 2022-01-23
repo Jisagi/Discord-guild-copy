@@ -51,13 +51,13 @@ client.on('ready', async () => {
             let latestVersion = await VersionControl.checkLibraryVersion(Translator);
             if (fs.existsSync('./package-lock.json')) {
                 let djs = require('./package-lock.json').dependencies['discord.js'].version;
-                let localVersion = djs.split('#')[1];
-                if (localVersion !== latestVersion[0].sha) throw new Error(Translator.disp('errorNPM2'));
+                let localVersion = djs.split('.').at(-1);
+                if (!latestVersion[0].sha.includes(localVersion)) throw new Error(Translator.disp('errorNPM2'));
             } else if (fs.existsSync('./yarn.lock')) {
                 let parsed = lockfile.parse(fs.readFileSync('./yarn.lock', 'utf8'));
-                let djs = parsed.object['discord.js@git://github.com/discordjs/discord.js'].resolved;
-                let localVersion = djs.split('#')[1];
-                if (localVersion !== latestVersion[0].sha) throw new Error(Translator.disp('errorNPM2'));
+                let djs = parsed.object['discord.js@dev'].resolved;
+                let localVersion = djs.split('.').at(-2);
+                if (!latestVersion[0].sha.includes(localVersion)) throw new Error(Translator.disp('errorNPM2'));
             } else {
                 throw new Error(Translator.disp('errorNPM1'));
             }
