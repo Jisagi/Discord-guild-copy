@@ -116,7 +116,7 @@ class Serializer {
      * @returns {Object[]} Serialized category channels
      */
     static serializeCategories(guildToCopy) {
-        let categoryCollection = guildToCopy.channels.cache.filter(c => c.type === 'GUILD_CATEGORY');
+        let categoryCollection = guildToCopy.channels.cache.filter(c => c.type === 4);
         categoryCollection = categoryCollection.sort((a, b) => a.position - b.position);
         let categories = categoryCollection.map(category => {
             let permOverwritesCollection = category.permissionOverwrites.cache.filter(pOver => pOver.type === 'role');
@@ -150,7 +150,7 @@ class Serializer {
      * @returns {Object[]} Serialized text channels
      */
     static serializeTextChannels(guildToCopy) {
-        let textChannelCollection = guildToCopy.channels.cache.filter(c => c.type === 'GUILD_TEXT');
+        let textChannelCollection = guildToCopy.channels.cache.filter(c => c.type === 0);
         textChannelCollection = textChannelCollection.sort((a, b) => a.rawPosition - b.rawPosition);
         let textChannel = textChannelCollection.map(tCh => {
             let permOverwritesCollection = tCh.permissionOverwrites.cache.filter(pOver => pOver.type === 'role');
@@ -189,7 +189,7 @@ class Serializer {
      * @returns {Object[]} Serialized voice channels
      */
     static serializeVoiceChannels(guildToCopy) {
-        let voiceChannelCollection = guildToCopy.channels.cache.filter(c => c.type === 'GUILD_VOICE');
+        let voiceChannelCollection = guildToCopy.channels.cache.filter(c => c.type === 2);
         voiceChannelCollection = voiceChannelCollection.sort((a, b) => a.rawPosition - b.rawPosition);
         let voiceChannel = voiceChannelCollection.map(vCh => {
             let permOverwritesCollection = vCh.permissionOverwrites.cache.filter(pOver => pOver.type === 'role');
