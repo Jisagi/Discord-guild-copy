@@ -10,8 +10,7 @@ const Creator = require('./objects/creator');
 const Logger = require('./objects/logger');
 const Translator = require('./objects/translator');
 const settings = require('./settings.json');
-const { Intents } = require('discord.js');
-const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MEMBERS'] });
+const client = new Discord.Client({ intents: [Discord.IntentsBitField.Flags.Guilds, Discord.IntentsBitField.Flags.GuildMembers] });
 
 let isBackup = false;
 let isRestore = false;
