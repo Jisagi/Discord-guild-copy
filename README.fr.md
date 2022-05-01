@@ -47,7 +47,6 @@ Pour obtenir l'ID d'un serveur, ouvrez les paramètres Discord -> Apparence, pui
 | copyBans | Par défaut: false - Définissez sur true pour maintenir bannis du serveur les utilisateurs. Le bot doit avoir l'autorisation BAN_MEMBERS (Bannir les membres) sur le serveur copié si vous voulez activez cette option ! |
 | language | Par défaut: en (anglais) - Définissez le sur une des langues disponibles dans le dossier "translations" (ru (russe), en (anglais), de (allemand) |
 | output | Par défaut: all - Sorties (messages qui peuvent être des erreurs ou informations) qui peuvent être renvoyés par le programme. Valeurs possibles: "all" toutes les sorties sont renvoyés, "error" seules les erreurs sont renvoyées, "none" aucune sortie n'est renvoyé |
-| djsVersionCheck | Par défaut: true - Vérifie la version local (actuel) de Discord.js par le commit hashé. Si vous lancez périodiquement le script, vous voudrez peut-être le désactiver |
 | debug | Par défaut: false - Définissez sur true pour un résultat général un peu plus poussé et l'affichage d'une erreur si il y en a, par exemple lors de l'apparition d'un problème |
 | token | Votre token de compte. Le bot n'a pas besoin d'autorisations sur le serveur copié (exepction: copyBans = true). |
 

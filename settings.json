@@ -11,7 +11,6 @@
     },
     "language": "en",
     "output": "all",
-    "djsVersionCheck": true,
     "sleepTimeout": 0,
     "debug": false,
     "token": ""

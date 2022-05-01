@@ -46,23 +46,6 @@ client.on('ready', async () => {
     let guildData = { step: 1 };
 
     try {
-        if (settings.djsVersionCheck) {
-            let latestVersion = await VersionControl.checkLibraryVersion(Translator);
-            if (fs.existsSync('./package-lock.json')) {
-                let djs = require('./package-lock.json').dependencies['discord.js'].version;
-                let localVersion = djs.split('.').at(-1);
-                if (!latestVersion[0].sha.includes(localVersion)) throw new Error(Translator.disp('errorNPM2'));
-            } else if (fs.existsSync('./yarn.lock')) {
-                let parsed = lockfile.parse(fs.readFileSync('./yarn.lock', 'utf8'));
-                let djs = parsed.object['discord.js@dev'].resolved;
-                let localVersion = djs.split('.').at(-2);
-                if (!latestVersion[0].sha.includes(localVersion)) throw new Error(Translator.disp('errorNPM2'));
-            } else {
-                throw new Error(Translator.disp('errorNPM1'));
-            }
-            Logger.logMessage(Translator.disp('messageDjsVersionCheckSuccess'));
-        }
-
         // Check script version
         let { version } = require('./package.json');
         let result = await VersionControl.checkVersion(Translator).catch(err => {

@@ -54,7 +54,6 @@ To get the id of a guild open your client settings -> Appearance and then enable
 | copy.Bans | default: false - Set to true to copy banned users. The bot needs to have the BAN_MEMBERS permission on the original guild if you enable this! |
 | language | default: en - Set this to any supported language from the `translations` folder |
 | output | default: all - Possible values: `all` for everything, `error` for errors only, `none` for no output at all |
-| djsVersionCheck | default: true - Checks the local discord.js version by its commit hash. If you periodically run this script, you might want to disable this |
 | sleepTimeout | default: 0 - Sleep timer in milliseconds (>0) to avoid possible ratelimits on very large guilds creations  |
 | debug | default: false - Set to true for a more detailed general and error output e.g. when creating an issue |
 | token | The bot token. The bot does not need any permissions on the original guild (only exception: copy.Bans=true). |
