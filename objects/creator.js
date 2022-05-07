@@ -176,8 +176,8 @@ class Creator {
                     let overwrites = category.permOverwrites.map(permOver => {
                         return {
                             id: guildData.references.roles.get(permOver.id).new.id,
-                            allow: new Permissions(BigInt(permOver.allowed)),
-                            deny: new Permissions(BigInt(permOver.denied)),
+                            allow: BigInt(permOver.allowed),
+                            deny: BigInt(permOver.denied),
                         };
                     });
                     let options = {
@@ -227,8 +227,8 @@ class Creator {
                         options.permissionOverwrites = textChannel.permOverwrites.map(permOver => {
                             return {
                                 id: guildData.references.roles.get(permOver.id).new.id,
-                                allow: new Permissions(BigInt(permOver.allowed)),
-                                deny: new Permissions(BigInt(permOver.denied)),
+                                allow: BigInt(permOver.allowed),
+                                deny: BigInt(permOver.denied),
                             };
                         });
                     }
@@ -280,8 +280,8 @@ class Creator {
                         options.permissionOverwrites = voiceChannel.permOverwrites.map(permOver => {
                             return {
                                 id: guildData.references.roles.get(permOver.id).new.id,
-                                allow: new Permissions(BigInt(permOver.allowed)),
-                                deny: new Permissions(BigInt(permOver.denied)),
+                                allow: BigInt(permOver.allowed),
+                                deny: BigInt(permOver.denied),
                             };
                         });
                     }
