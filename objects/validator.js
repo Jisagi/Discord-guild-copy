@@ -1,7 +1,7 @@
 class Validator {
 
     /**
-     * Ensure node version is >= 10.0.0
+     * Ensure node version is >= 16.0.0
      * @param {Object} Translator Translator object
      */
     static validateNodeVersion(Translator) {
@@ -9,7 +9,7 @@ class Validator {
         let res = process.version.match(rgx);
         if (res.length < 1) throw new Error(Translator.disp('errorNode'));
         let major = res[0].split('.')[0];
-        if (!Number.isInteger(parseInt(major)) || new Number(major) < 10) throw new Error(Translator.disp('errorNode'));
+        if (!Number.isInteger(parseInt(major)) || new Number(major) < 16) throw new Error(Translator.disp('errorNode'));
     }
 
     /**
@@ -59,7 +59,7 @@ class Validator {
         if (!newGuildAdminRole.permissions.has('ADMINISTRATOR')) throw new Error(translator.disp('errorValidationAdminRolePersmissions'));
         let highestRole = newGuild.roles.cache.reduce((prev, role) => role.comparePositionTo(prev) > 0 ? role : prev, newGuild.roles.cache.first());
         if (newGuildAdminRole.id !== highestRole.id) throw new Error(translator.disp('errorValidationAdminRolePosition'));
-        if (!newGuild.me.roles.cache.has(newGuildAdminRole.id)) throw new Error(translator.disp('errorValidationAdminRoleNotAssigned'));
+        if (!newGuild.members.me.roles.cache.has(newGuildAdminRole.id)) throw new Error(translator.disp('errorValidationAdminRoleNotAssigned'));
 
         return data;
     }

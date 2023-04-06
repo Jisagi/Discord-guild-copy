@@ -136,11 +136,11 @@ class Creator {
                     } else {
                         // Create new role
                         let newRole = {
-                                name: role.name,
-                                color: role.hexColor,
-                                hoist: role.hoist,
-                                mentionable: role.mentionable,
-                                permissions: BigInt(role.permBitfield),
+                            name: role.name,
+                            color: role.hexColor,
+                            hoist: role.hoist,
+                            mentionable: role.mentionable,
+                            permissions: BigInt(role.permBitfield),
                         };
 
                         let createdRole = await newGuild.roles.create(newRole);
@@ -181,11 +181,12 @@ class Creator {
                         };
                     });
                     let options = {
+                        name: category.name,
                         type: 4,
                         permissionOverwrites: overwrites,
                     };
 
-                    let createdCategory = await newGuild.channels.create(category.name, options);
+                    let createdCategory = await newGuild.channels.create(options);
                     if (debug) Logger.logMessage(translator.disp('messageCreatorCategoryDataDebug', guildData.step - 1, counter++, createdCategory.name));
                     categoryReferences.set(category.idOld, { new: createdCategory, old: category });
 
@@ -216,6 +217,7 @@ class Creator {
                     let textChannel = guildData.textChannel[i];
 
                     let options = {
+                        name: textChannel.name,
                         type: 0,
                         nsfw: textChannel.nsfw,
                         topic: textChannel.topic,
@@ -233,7 +235,7 @@ class Creator {
                         });
                     }
 
-                    let createdChannel = await newGuild.channels.create(textChannel.name, options);
+                    let createdChannel = await newGuild.channels.create(options);
                     if (textChannel.isSystemChannel) newSystemChannel = createdChannel.id;
                     if (debug) Logger.logMessage(translator.disp('messageCreatorTextDataDebug', guildData.step - 1, counter++, createdChannel.name));
 
@@ -269,6 +271,7 @@ class Creator {
                     let voiceChannel = guildData.voiceChannel[i];
 
                     let options = {
+                        name: voiceChannel.name,
                         type: 2,
                         bitrate: validateBitrate(voiceChannel.bitrate, newGuild.premiumTier),
                         userLimit: validateUserLimit(voiceChannel.userLimit),
@@ -286,7 +289,7 @@ class Creator {
                         });
                     }
 
-                    let createdChannel = await newGuild.channels.create(voiceChannel.name, options);
+                    let createdChannel = await newGuild.channels.create(options);
                     if (voiceChannel.region) await createdChannel.setRTCRegion(voiceChannel.region);
                     if (voiceChannel.isAfkChannel) newAfkChannel = createdChannel.id;
                     if (debug) Logger.logMessage(translator.disp('messageCreatorVoiceDataDebug', guildData.step - 1, counter++, createdChannel.name));
