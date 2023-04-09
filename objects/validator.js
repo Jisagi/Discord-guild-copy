@@ -21,7 +21,7 @@ class Validator {
     static validateSettingsBackup(client, originalGuildId, copyBans, Translator) {
         if (!client.guilds.cache.has(originalGuildId)) throw new Error(Translator.disp('errorSerializationOriginalNotExistent'));
         if (!copyBans) return;
-        let member = client.guilds.cache.get(originalGuildId).me;
+        let member = client.guilds.cache.get(originalGuildId).members.me;
         if (!member.permissions.has('BAN_MEMBERS') && !member.permissions.has('ADMINISTRATOR')) throw new Error(Translator.disp('errorSerializationNoBanPermissions'));
     }
 
