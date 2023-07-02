@@ -342,7 +342,7 @@ class Creator {
 
                 for (let i = 0; i < emojisNormal.length; i++) {
                     let emoji = emojisNormal[i];
-                    let createdEmoji = await newGuild.emojis.create(emoji.url, emoji.name);
+                    let createdEmoji = await newGuild.emojis.create({ attachment: emoji.url, name: emoji.name });
                     if (debug) Logger.logMessage(translator.disp('messageCreatorEmojiDataDebug', guildData.step - 1, counter++, createdEmoji.name));
 
                     await this.sleep();
@@ -350,7 +350,7 @@ class Creator {
 
                 for (let i = 0; i < emojisAnimated.length; i++) {
                     let emoji = emojisAnimated[i];
-                    let createdEmoji = await newGuild.emojis.create(emoji.url, emoji.name)
+                    let createdEmoji = await newGuild.emojis.create({ attachment: emoji.url, name: emoji.name });
                     if (debug) Logger.logMessage(translator.disp('messageCreatorEmojiDataDebug', guildData.step - 1, counter++, createdEmoji.name));
 
                     await this.sleep();
